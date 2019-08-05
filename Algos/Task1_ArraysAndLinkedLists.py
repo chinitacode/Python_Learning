@@ -23,9 +23,31 @@ class DynamicArray:
     def __len__ (self):
         return self._n
 
+    def _make_array(self, c):
+        return (c * ctypes.py_object)( )
+
     def is_empty(self):
         return self._n == 0
 
+    #只能在self._A里被数字占了的位iter，不然就是ctypes.py_object的instance,无法被str()
+    def __repr__(self):
+        return '[ ' + ', '.join(str(self._A[i]) for i in range(self._n)) + ']'
+
+    '''
+    >>> import ctypes
+    >>> A = (ctypes.py_object * 10)()
+    >>> A
+    <__main__.py_object_Array_10 object at 0x02CE9AD0>
+    >>> A[0]
+    Traceback (most recent call last):
+      File "<pyshell#9>", line 1, in <module>
+        A[0]
+    ValueError: PyObject is NULL
+    >>> str(A)
+    '<__main__.py_object_Array_10 object at 0x02CE9AD0>'
+    >>> repr(A)
+    '<__main__.py_object_Array_10 object at 0x02CE9AD0>'
+    '''
     # O(1)
     def __getitem__ (self, k):
         if not 0 <= k < self._n:
@@ -39,9 +61,6 @@ class DynamicArray:
         self._A[self._n] = obj
         self._n += 1
 
-    def _make_array(self, c):
-        return (c * ctypes.py_object)( )
-
     def _resize(self, c):
         B = self._make_array(c)
         for k in range(self._n):
@@ -50,6 +69,7 @@ class DynamicArray:
         self._capacity = c
 
     # O(n)
+    #先把k后面的元素往后挪一位（从尾端开始），再把value插入k
     def insert(self, k, value):
         if self._n == self._capacity:
             self._resize(2 * self._capacity)
@@ -89,12 +109,18 @@ class DynamicArray:
             self._A[:k + 1] = li[:j + 1]
 
 
-    def __repr__(self):
-        return repr(self._A[:self._n])
 
 
+
+    '''
     def __str__(self):
         return f"size: {self._n}, capacity: {len(self._A)}\n{str(self._A[:self._n])}"
+    '''
+    '''
+    def __print__(self):
+        for i in range(self._n):
+            print(self._A[i], end = ',')
+    '''  
 
 mylist = DynamicArray()
 li = [2, 6, 10, 28]
