@@ -7,7 +7,8 @@
 
 '''
 
-lass Link:
+
+class Link:
     class Node:
         def __init__(self, value = None, next = None):
             self.value = value
@@ -19,6 +20,24 @@ lass Link:
 
     def is_empty(self):
         return not self.size
+
+    def __setitem__(self, index, value):
+        node = self.__getitem__(index)
+        node.value = value
+
+    # Return a node
+    def __getitem__(self, index):
+        if index < -self.size or index >= self.size:
+            raise ValueError( 'index is out of bound' )
+        if index < 0:
+            index = self.size + index
+        if not self.head.next:
+            raise ValueError( 'LinkedList is empty' )
+        node = self.head.next
+        for i in range(index):
+            node = node.next
+        return node
+
     # O(1)
     def add_first(self, value):
         #Create a new node with the value,
@@ -54,9 +73,11 @@ lass Link:
         self.size -= 1
 
     #O(n)
-    def insert(self, value, index):
-        if index < 0 or index > self.size:
-            raise Outbound('list index out of range')
+    def insert(self, index, value):
+        if index < -self.size or index >= self.size:
+            raise ValueError( 'index is out of bound' )
+        if index < 0:
+            index = self.size + index
         new_node = self.Node(value)
         if self.is_empty():
             self.head.next = new_node
@@ -70,17 +91,33 @@ lass Link:
 
     #O(n)
     def remove(self, index):
-        if self.is_empty():
-            raise Empty('LinkedList is empty')
-        if index < 0 or index >= self.size:
-            raise Outbound( 'index is out of bound' )
+        assert self.size > 0, 'The linked list is empty!'
+        if index < -self.size or index >= self.size:
+            raise ValueError( 'index is out of bound' )
+        if index < 0:
+            index = self.size + index
         node = self.head
         for i in range(index):
             node = node.next
         node.next = node.next.next
         self.size -= 1
 
-    def search(self, value):
+    #O(n)
+    def search(self, val):
+        assert self.size > 0, 'The linked list is empty!'
+        node = self.head.next
+        index = 0
+        while node.next != None:
+            if node.value == val:
+                return index
+            node = node.next
+            index += 1
+        return -1
+
+    def sort(self, reverse = False):
+        pass
+
+    def reverse(self):
         pass
 
     #O(n)
@@ -128,18 +165,102 @@ class SLinked(Link):
 class DLinked(Link):
     class Node(Link.Node):
         def __init__(self, value = None, next = None, prev = None):
-            super().__init__(value = None, next = None)
+            super().__init__(value, next)
             self.prev = prev
 
     def __init__(self,  *args):
         super().__init__()
-        self.tail = self.Node()
+        self.tail = self.Node(None, None, self.head)
+        self.head.next = self.tail
         for arg in args:
             self.add_last(arg)
-
+    # O(1)
     def add_first(self, value):
-        node = self.Node(value, self.head.next, None)
-        self.head.next = node
+        new_node = self.Node(value, self.head.next, self.head)
+        self.head.next.prev = new_node
+        self.head.next = new_node
         self.size += 1
 
-   # def add_last(self, value):
+    # O(1)
+    def add_last(self, value):
+        new_node = self.Node(value, self.tail, self.tail.prev)
+        self.tail.prev.next = new_node
+        self.tail.prev = new_node
+        self.size += 1
+
+    def insert(self, index, value):
+        if index < -self.size or index > self.size:
+            raise ValueError( 'index is out of bound' )
+        if index < 0:
+            index = self.size + index
+        if index == 0:
+            self.add_first(value)
+        elif index == self.size:
+            self.add_last(value)
+        else:
+            next_node = self.__getitem__(index)
+            new_node = self.node(value, next_node, next_node.prev)
+            next_node.prev.next = new_node
+            next_node.prev = new_node
+            self.size += 1
+
+    def remove_first(self):
+        assert self.size > 0, 'The linked list is empty!'
+        self.head.next.next.prev = self.head
+        self.head.next = self.head.next.next
+        self.size -= 1
+
+    def pop(self):
+        assert self.size > 0, 'The linked list is empty!'
+        popped = self.tail.prev
+        self.tail.prev.prev.next = self.tail
+        self.tail.prev = self.tail.prev.prev
+        self.size -= 1
+        popped.prev = None
+        popped.next = None
+        return popped
+
+    def remove(self, index):
+        if index < -self.size or index >= self.size:
+            raise ValueError( 'index is out of bound' )
+        if index < 0:
+            index = self.size + index
+        if index == 0:
+            self.remove_first()
+        elif index == self.size - 1:
+            self.pop()
+        else:
+            node = self.__getitem__(index)
+            node.prev.next = node.next
+            node.next.prev = node.prev
+            self.size -= 1
+
+    def __repr__(self):
+        if self.size == 0:
+            return 'Link()'
+        node = self.head.next
+        s = ''
+        while node.next != None:
+            if node.next.next != None:
+                s += 'Link(' + str(node.value) + ', '
+            else:
+                s += 'Link(' + str(node.value)
+            node = node.next
+        s += ')' * self.size
+
+        return  s
+
+    def __str__(self):
+        if self.size == 0:
+            return '<>'
+        node = self.head.next
+        s = ''
+        while node.next != None:
+            if node.next.next != None:
+                s += '<' + str(node.value) + ', '
+            else:
+                s += '<' + str(node.value)
+            node = node.next
+        s += '>' * self.size
+
+        return  s
