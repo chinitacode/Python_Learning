@@ -42,14 +42,20 @@ class Link:
     def add_first(self, value):
         #Create a new node with the value,
         # make its rest point to the next of the original linked list
-        node = self.Node(value, self.head.next)
+        if isinstance(value, self.Node):
+            new_node = value
+        else:
+            new_node = self.Node(value, self.head.next)
         # Reset the dummy node as the head
-        self.head.next = node
+        self.head.next = new_node
         self.size += 1
 
     #O(n)
     def add_last(self, value):
-        new_node = self.Node(value)
+        if isinstance(value, self.Node):
+            new_node = value
+        else:
+            new_node = self.Node(value)
         # Create a variable to loop through until reaching the tail node
         node = self.head
         while node.next != None:
@@ -114,6 +120,16 @@ class Link:
             index += 1
         return -1
 
+    # O(n) Two-pointer Method, one traverses only one node at a time while the other traverses two nodes
+    # and stop when the other reached the end
+    def get_mid(self):
+        assert self.size > 0, 'The linked list is empty!'
+        slow, fast = self.head.next, self.head.next
+        while fast.next != None and fast.next.next != None:
+            slow = slow.next
+            fast = fast.next.next
+        return slow
+
     def sort(self, reverse = False):
         pass
 
@@ -122,16 +138,18 @@ class Link:
 
     #O(n)
     def __str__(self):
-        if self.size == 0:
+        if self.head.next == None:
             return '<>'
+        count = 0
         node = self.head
         s = ''
         while node.next != None:
             node = node.next
+            count += 1
             if node.next != None:
                 s += '<' + str(node.value) + ', '
             else:
-                s += '<' + str(node.value) + '>' * self.size
+                s += '<' + str(node.value) + '>' * count
         return  s
 
     #O(n)
@@ -143,17 +161,16 @@ class Link:
         while node.next != None:
             node = node.next
             if node.next != None:
-                s += 'Link(' + str(node.value) + ', '
+                s += 'SLL(' + str(node.value) + ', '
             else:
-                s += 'Link(' + str(node.value) + ')' * self.size
+                s += 'SLL(' + str(node.value) + ')' * self.size
         return  s
 
     def __len__(self):
         return self.size
 
-
 # Singly Linked List单向链表
-class SLinked(Link):
+class SLL(Link):
     def __init__(self, *args):
         super().__init__()
         for arg in args:
@@ -162,7 +179,7 @@ class SLinked(Link):
 
 
 # Doubly Linked List双向链表
-class DLinked(Link):
+class DLL(Link):
     class Node(Link.Node):
         def __init__(self, value = None, next = None, prev = None):
             super().__init__(value, next)
@@ -235,6 +252,17 @@ class DLinked(Link):
             node.next.prev = node.prev
             self.size -= 1
 
+    def get_mid(self):
+        assert self.size > 0, 'The linked list is empty!'
+        index = 0
+        left, right = self.head.next, self.tail.prev
+        while left != right and left.next != right:
+            left = left.next
+            right = right.prev
+            index += 1
+        return left
+
+
     def __repr__(self):
         if self.size == 0:
             return 'Link()'
@@ -262,5 +290,8 @@ class DLinked(Link):
                 s += '<' + str(node.value)
             node = node.next
         s += '>' * self.size
+
+        return  s
+
 
         return  s

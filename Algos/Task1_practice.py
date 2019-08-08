@@ -116,9 +116,20 @@ def majorityElement(self, nums):
             count -= 1
     return cand
 
-# 141. Linked List Cycle
-#  Tortoise and hare algo
-def hasCycle(self, head):
+
+'''
+# 141. Linked List Cycle I
+# no use of dummy node
+
+Method 1
+Best solution:
+#  Tortoise and hare algorithm
+The "trick" is to not check all the time whether
+we have reached the end but to handle it via an exception.
+"Easier to ask for forgiveness than permission."
+'''
+# When initialize, fast is one step ahead of slow
+def hasCycle1(head):
     try:
         slow = head
         fast = head.next
@@ -129,8 +140,220 @@ def hasCycle(self, head):
     except:
         return False
 
+'''
+Method 2
+'''
+def has_cycle2(head):
+    if head is None: return False
+    slow, fast = head, head.next
+    while fast and fast.next:
+        slow, fast = slow.next, fast.next.next
+        if slow == fast:
+            return True
+    return False
+
+'''
+# Considering dummy node and the self-defined classes here:
+
+'''
+def has_cycle(ll):
+    '''
+    >>> ll1 = SLL(4, 8, 1, 3)
+    >>> ll1[-1].next = ll1[1]
+    >>> has_cycle(ll1)
+    True
+    '''
+    assert ll.size > 0, 'The linked list is empty!'
+    slow, fast = ll.head.next, ll.head.next
+    index = 0
+    while fast.next != None and fast.next.next != None:
+        slow, fast = slow.next, fast.next.next
+        index += 1
+        if slow == fast:
+            return True
+    return False
+
+'''
+# 142. Linked List Cycle II
+Indeed it's more a math problem(环形追击问题)
+1. find the position where slow and fast first meet;
+2. the distance between the beginning loop position and it
+is the same as the position of the beginning loop;
+3. set slow to the head of the link, index = 0;
+4. when slow and fast meet again(both forward at the same speed), return index.
+
+Consider the following linked list, where E is the cylce entry and k, the crossing point of fast and slow.
+        H: distance from head to cycle entry E
+        D: distance from E to k(the shortest)
+        L: cycle length
+                          _____
+                         /      \
+                        /        H
+        head_____H______E         \
+                        \        /
+                         k______/
+
+
+        When slow reaches E, fast has already travelled 2H,
+        arriving H of the cycle, in order to find out where they meet,
+        the problem becomes like this: slow starts at E while fast starts at H,
+        and fast travels twice as quickly as slow. So when fast catches slow,
+        fast must have travelled one cycle already.
+        Suppose they meet at k: L-K = (L + (L-K-H))/2
+        ==> K = H
+        So the problem evolves into solving K.
+        Because slow forwards one step each time, so we put slow to head,
+        make it and fast both travel to E at the speed of one step a time,
+        and return slow when they meet again.
+
+
+# Considering dummy node and the self-defined classes here:
+#O(n) 最多跑2n
+'''
+def detectCycle(head):
+    '''
+    >>> ll1= SLL(1, 2)
+    >>> ll1[1].next = ll1[0]
+    >>> detectCycle(ll1)
+    0
+    >>> ll2 = SLL(4, 8, 1, 3)
+    >>> ll2[-1].next = ll2[1]
+    >>> detectCycle(ll2)
+    1
+
+    >>> ll3 = SLL(2, 3, 4, 5)
+    >>> detectCycle(ll3)
+    -1
+    '''
+
+    try:
+        slow, fast = head.head.next, head.head.next
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next.next
+            if slow == fast:
+                slow = head.head.next
+                break
+        else:
+            return -1
+        while slow != fast:
+            slow, fast = slow.next, fast.next
+            index += 1
+        return index
+    except:
+        return -1
+
+'''
+leetcode solution format:
+'''
+class Solution(object):
+    def detectCycle(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        try:
+            slow, fast = head, head
+            while fast and fast.next:
+                slow, fast = slow.next, fast.next.next
+                if slow == fast:
+                    slow = head
+                    break
+            else:
+                return null
+            while slow != fast:
+                slow, fast = slow.next, fast.next
+            return slow
+        except:
+            return None
+
+'''
+19. Remove Nth Node From End of List
+
+Note: Given n will always be valid.
+
+# Two-pointer method: Make fast take n steps first,
+then check whether fast is None, if is, then the length
+of the list is n, we remove the Nth node from end of list
+which equals to the head of the node, so we return head.next;
+if not, then we make slow and fast keep running one step a time
+until reaching the end of the list (when fast.next == None), thus
+slow and fast are at a distance of N, that way, slow.next is the node
+to delete, so we reconnect the list and return head.
+'''
+class Solution(object):
+    def removeNthFromEnd(self, head, n):
+        """
+        :type head: ListNode
+        :type n: int
+        :rtype: ListNode
+        """
+        slow = fast = head
+        for i in range(n):
+            if fast != None:
+                fast = fast.next
+        #Crucial step:
+        #If after taking n steps fast is None,
+        # it means the length of the list is n,
+        # so we only need to delete the first element(return head.next)
+        if not fast:
+            return head.next
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next
+        slow.next = slow.next.next
+        return head
+
+'''
+237. Delete Node in a Linked List
+Delete Node in Linked List: except the tail, given only access to that node.
+'''
+def delete_node(node):
+    node.value = node.next.value
+    node.next = node.next.next
+
+'''
+Split in Half
+Give a list, split in into two lists, one for the front half, and one for the back half.
+If the length is odd, then the front half contains one more node than the back half.
+'''
+def split(head):
+    if not head: return None
+    slow = fast = head
+    front_end = slow
+    while fast:
+        front_end = slow
+        slow = slow.next
+        fast = fast.next.next if fast.next else None
+    back = slow
+    front_end.next = None
+    front = head
+    return (front, back)
+
+
+'''
+21. Merge Two Sorted Lists
+Merge two sorted linked lists and return it as a new list.
+
+Input: 1->2->4, 1->3->4
+Output: 1->1->2->3->4->4
+'''
+# iteratively
+# O(m + n)
+def mergeTwoLists1(l1, l2):
+    dummy = cur = Node(0)
+    while l1 and l2:
+        if l1.value < l2.value:
+            cur.next = l1
+            l1 = l1.next
+        else:
+            cur.next = l2
+            l2 = l2.next
+        cur = cur.next
+    cur.next = l1 or l2
+    return dummy.next
+
 # 23. Merge k Sorted Lists
-# divide and conquer solution
+# divide and conquer solution, Time: O(Nlogk), Space: O(1)
+#Recursive solution:
 def mergeKLists(self, lists):
     if not lists:
         return
@@ -140,6 +363,22 @@ def mergeKLists(self, lists):
     l = self.mergeKLists(lists[:mid])
     r = self.mergeKLists(lists[mid:])
     return self.merge(l, r)
+
+#Iterative solution    
+def mergeKLists_iter(self, lists):
+    if not lists:
+        return
+    if len(lists) == 1:
+        return lists[0]
+    amount = len(lists)
+    interval = 1
+    while interval < amount:
+        for i in range(0, amount - interval, interval * 2):
+            lists[i] = self.merge(lists[i], lists[i + interval])
+        interval *= 2
+    return lists[0] if amount > 0 else lists
+
+
 
 def merge(self, l, r):
     dummy = cur = ListNode(0)
