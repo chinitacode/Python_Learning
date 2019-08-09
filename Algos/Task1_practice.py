@@ -364,7 +364,7 @@ def mergeKLists(self, lists):
     r = self.mergeKLists(lists[mid:])
     return self.merge(l, r)
 
-#Iterative solution    
+#Iterative solution
 def mergeKLists_iter(self, lists):
     if not lists:
         return
@@ -392,5 +392,42 @@ def merge(self, l, r):
         cur = cur.next
     cur.next = l or r
     return dummy.next
+
+'''
+# 160. Intersection of Two Linked Lists
+Method 1: Use len(), Time: O(n),  Space: O(1)
+Make A and B have the same length and find the node when A == B
+'''
+def getIntersectionNode(headA, headB):
+    curA, curB = headA, headB
+    lenA, lenB = 0, 0
+    while curA is not None:
+        lenA += 1
+        curA = curA.next
+    while curB is not None:
+        lenB += 1
+        curB = curB.next
+    curA, curB = headA, headB
+    if lenA > lenB:
+        for i in range(lenA-lenB):
+            curA = curA.next
+    elif lenB > lenA:
+        for i in range(lenB-lenA):
+            curB = curB.next
+    while curB != curA:
+        curB = curB.next
+        curA = curA.next
+    return curA
+
+#Method 2: Make A and B both run the same distance and they will finally meet at the intersection node
+def getIntersectionNode2(headA, headB):
+    if headA and headB:
+        A, B = headA, headB
+        while A!=B:
+            A = A.next if A else headB
+            B = B.next if B else headA
+        return A
+
+
 
 #41. First Missing Positive(Optional)
