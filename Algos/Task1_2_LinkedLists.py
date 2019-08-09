@@ -47,6 +47,7 @@ class Link:
         else:
             new_node = self.Node(value, self.head.next)
         # Reset the dummy node as the head
+        new_node.next = self.head.next
         self.head.next = new_node
         self.size += 1
 
