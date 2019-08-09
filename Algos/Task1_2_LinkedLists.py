@@ -66,8 +66,11 @@ class Link:
     # O(1)
     def remove_first(self):
         assert self.size > 0, 'The linked list is empty!'
+        removed = self.head.next
         self.head.next = self.head.next.next
+        removed.next = None
         self.size -= 1
+        return removed
 
     # O(n)
     def remove_last(self):
@@ -75,8 +78,11 @@ class Link:
         node = self.head
         while node.next.next != None:
             node = node.next
+        popped = node.next
         node.next = None
         self.size -= 1
+        return popped
+
 
     #O(n)
     def insert(self, index, value):
