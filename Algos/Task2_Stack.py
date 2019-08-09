@@ -3,6 +3,10 @@ from Task1_2_LinkedLists import SLL
 
 '''
 【栈】
+FILO： First in Last out
+A stack is a data structure with two main operations: push and pop.
+Push: append an element on top of the stack
+Pop: remove an element from the top of the stack
 栈(Stack)是限制插入和删除操作只能在一个位置进行的表，该位置是表的末端，称为栈的顶(top)。
 栈的基本操作有PUSH(入栈)和POP(出栈)。栈又被称为LIFO(后入先出)表。
 1.用数组实现一个顺序栈
@@ -22,7 +26,7 @@ isEmpty(): checks whether the stack is empty. Does not need parameters and retur
 size(): returns the number of items on the stack. Does not need parameters and returns an integer.
 '''
 #1.Stack implementation using List
-class Stack():
+class ListStack():
     def __init__(self):
         self.stack=[]
     def isEmpty(self):
@@ -46,7 +50,7 @@ However, if we want to implement Stack language agnostically,
 we have to assume that lists are like arrays (fixed in size)
 and use a length pointer to keep a tab on the status of the stack.
 '''
-class Stack():
+class ArrayStack():
     def __init__(self):
         self.stack=[]
         self.capacity = 10
@@ -69,7 +73,7 @@ class Stack():
         return self.length
 
 #3. Stack implementation using Linked List
-class Stack():
+class LinkedStack():
     def __init__(self):
         self.stack = SLL()
     def isEmpty(self):
@@ -86,7 +90,7 @@ class Stack():
         return self.stack.__str__()
 
 '''
-mystack = Stack()
+mystack = LinkedStack()
 print ('size was: ', str(len(mystack)))
 print(mystack)
 mystack.push(1)
