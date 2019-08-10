@@ -69,8 +69,13 @@ class ArrayStack():
         return self.stack.pop()
     def peek(self):
         return self.stack[-1]
-    def size(self):
+    def __len__(self):
         return self.length
+    def __str__(self):
+        s = ''
+        for i in range(len(self.stack)):
+            s += str(self.stack[-(i + 1)]) + ' '
+        return '[ ' + s + ']'
 
 #3. Stack implementation using Linked List
 class LinkedStack():
