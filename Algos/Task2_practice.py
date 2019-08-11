@@ -1,5 +1,18 @@
 '''
-20. Valid Parentheses
+# Practice with Stack:
+20. Valid Parentheses (easy)
+32. Longest Valid Parentheses (hard)
+150. Evaluate Reverse Polish Notation (medium)
+
+# Practice with Queue:
+622. Design Circular Queue (Medium)
+641. Design Circular Deque (Medium)
+239. Sliding Window Maximum (Hard)
+
+# Practice with Recursion:
+70. Climbing Stairs (Easy)
+
+# 20. Valid Parentheses
 '''
 class Solution:
     # @return a boolean
@@ -123,3 +136,174 @@ class Solution(object):
                     stack = [0]
 
         return longest
+
+'''
+# 150. Evaluate Reverse Polish Notation (medium)
+'''
+
+
+
+
+'''
+# 622. Design Circular Queue (Medium)
+  Method1: Use List(Array)
+'''
+class MyCircularQueue(object):
+
+    def __init__(self, k):
+        """
+        Initialize your data structure here. Set the size of the queue to be k.
+        :type k: int
+        """
+        self.size = k
+        self.front = 0
+        self.rear = -1
+        self.length = 0
+        self.stack = [None] * self.size
+
+
+
+    def enQueue(self, value):
+        """
+        Insert an element into the circular queue. Return true if the operation is successful.
+        :type value: int
+        :rtype: bool
+        """
+        if self.isFull():
+            return False
+        self.rear = (self.rear + 1) % self.size
+        self.stack[self.rear] = value
+        self.length += 1
+        return True
+
+    def deQueue(self):
+        """
+        Delete an element from the circular queue. Return true if the operation is successful.
+        :rtype: bool
+        """
+        if self.isEmpty():
+            return False
+        self.stack[self.front] = None
+        self.front = (self.front + 1) % self.size
+        self.length -= 1
+        return True
+
+    def Front(self):
+        """
+        Get the front item from the queue.
+        :rtype: int
+        """
+        if self.isEmpty():
+            return -1
+        return self.stack[self.front]
+
+    def Rear(self):
+        """
+        Get the last item from the queue.
+        :rtype: int
+        """
+        if self.isEmpty():
+            return -1
+        return self.stack[self.rear]
+
+    def isEmpty(self):
+        """
+        Checks whether the circular queue is empty or not.
+        :rtype: bool
+        """
+        return self.length == 0
+
+    def isFull(self):
+        """
+        Checks whether the circular queue is full or not.
+        :rtype: bool
+        """
+        return self.length == self.size
+# Your MyCircularQueue object will be instantiated and called as such:
+# obj = MyCircularQueue(k)
+# param_1 = obj.enQueue(value)
+# param_2 = obj.deQueue()
+# param_3 = obj.Front()
+# param_4 = obj.Rear()
+# param_5 = obj.isEmpty()
+# param_6 = obj.isFull()
+'''
+# Method2: Use Doubly Linked List
+'''
+class MyCircularQueue(object):
+
+    def __init__(self, k):
+        """
+        Initialize your data structure here. Set the size of the queue to be k.
+        :type k: int
+        """
+        self.size = k
+        self.front = Node()
+        self.rear = Node()
+        self.front.next = self.rear
+        self.rear.prev = self.front
+        self.length = 0
+
+
+    def enQueue(self, value):
+        """
+        Insert an element into the circular queue. Return true if the operation is successful.
+        :type value: int
+        :rtype: bool
+        """
+        if self.isFull():
+            return False
+        new_node = Node(self.rear.prev, value, self.rear)
+        self.rear.prev.next = new_node
+        self.rear.prev = new_node
+        self.length += 1
+        return True
+
+    def deQueue(self):
+        """
+        Delete an element from the circular queue. Return true if the operation is successful.
+        :rtype: bool
+        """
+        if self.isEmpty():
+            return False
+        self.front.next.next.prev = self.front
+        self.front.next = self.front.next.next
+        self.length -= 1
+        return True
+
+    def Front(self):
+        """
+        Get the front item from the queue.
+        :rtype: int
+        """
+        if self.isEmpty():
+            return -1
+        return self.front.next.value
+
+    def Rear(self):
+        """
+        Get the last item from the queue.
+        :rtype: int
+        """
+        if self.isEmpty():
+            return -1
+        return self.rear.prev.value
+
+    def isEmpty(self):
+        """
+        Checks whether the circular queue is empty or not.
+        :rtype: bool
+        """
+        return self.length == 0
+
+    def isFull(self):
+        """
+        Checks whether the circular queue is full or not.
+        :rtype: bool
+        """
+        return self.length == self.size
+class Node:
+    def __init__(self, prev = None, value = None, next = None):
+        self.prev = prev
+        self.value = value
+        self.next = next
