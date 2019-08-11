@@ -116,3 +116,88 @@ mystack.pop()
 mystack.pop()
 #mystack.pop()
 '''
+#4. Stack implementation using ArrayQueue
+from Task2_Queues import ArrayQueue
+class StackWithQueue:
+    def __init__(self):
+        self.stack = ArrayQueue()
+
+    def is_empty(self):
+        return self.stack.is_empty()
+
+    def push(self, e):
+        self.stack.enqueue(e)
+
+    #O(n)
+    def pop(self):
+        for i in range(self.stack._size - 1):
+            self.push(self.stack.dequeue())
+        return self.stack.dequeue()
+
+    #O(n)
+    def peek(self):
+        for i in range(self.stack._size - 1):
+            self.push(self.stack.dequeue())
+        return self.stack.first()
+
+    def __len__(self):
+        return len(self.stack)
+
+    def __str__(self):
+        return str(self.stack)
+
+'''
+stack = StackWithQueue()
+print(stack.is_empty())
+stack.push(1)
+stack.push(2)
+print(stack)
+print(stack.peek())
+print(stack)
+
+print(stack.is_empty())
+stack.push(3)
+stack.push(4)
+print(stack)
+
+print(stack.peek())
+print(stack)
+print('len: ', len(stack), '\n')
+
+print(stack.pop())
+print(stack)
+print('len: ', len(stack))
+print('peek: ', stack.peek())
+print(stack)
+'''
+
+#5. Stack implementation using LinkedQueue
+from Task2_Queues import LinkedQueue
+
+class StackwithLinkedQueue():
+    def __init__(self):
+        self.stack = LinkedQueue()
+
+    def is_empty(self):
+        return self.stack.is_empty()
+
+    def push(self, e):
+        self.stack.enqueue(e)
+
+    #O(n)
+    def pop(self):
+        for i in range(self.stack.count - 1):
+            self.push(self.stack.dequeue().value)
+        return self.stack.dequeue()
+
+    #O(n)
+    def peek(self):
+        for i in range(self.stack.count - 1):
+            self.push(self.stack.dequeue().value)
+        return self.stack.peek()
+
+    def __len__(self):
+        return len(self.stack)
+
+    def __str__(self):
+        return str(self.stack)
