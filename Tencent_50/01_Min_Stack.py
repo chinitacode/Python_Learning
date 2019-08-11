@@ -19,6 +19,8 @@ minStack.top();      --> Returns 0.
 minStack.getMin();   --> Returns -2.
 
 #1. push self-defined data structure '(v, min)' into stack recording current minimum value each time
+# Creating a new data structure class is not necessary, a tuple pair (a, b) also works fine
+A bit space wasting if the pushed values are all larger than min, thus spaces are wasted repeatedly adding same min
 Time: O(1)    Space: O(n)
 Runtime: 48 ms, faster than 94.53% of Python online submissions for Min Stack.
 Memory Usage: 18 MB, less than 6.67% of Python online submissions for Min Stack.
@@ -67,7 +69,56 @@ class MinStack(object):
         return self.stack[-1].min
 
 '''
-#2. two-stack method (60ms, beats 99%)
+# Use tuple pair and add boundary cases:
+Runtime: 60 ms, faster than 44.49% of Python online submissions for Min Stack.
+Memory Usage: 16.1 MB, less than 20.00% of Python online submissions for Min Stack.
+'''
+class MinStack(object):
+
+    def __init__(self):
+        """
+        initialize your data structure here.
+        """
+        self.stack = []
+
+    def push(self, x):
+        """
+        :type x: int
+        :rtype: None
+        """
+        if self.stack == []:
+            newMin = x
+        else:
+            newMin = min(x, self.getMin())
+        self.stack.append((x, newMin))
+
+    def pop(self):
+        """
+        :rtype: None
+        """
+        if self.stack == []:
+            raise IndexError('Empty Stack')
+        return self.stack.pop()[0]
+
+    def top(self):
+        """
+        :rtype: int
+        """
+        if self.stack == []:
+            raise IndexError('Empty Stack')
+        return self.stack[-1][0]
+
+    def getMin(self):
+        """
+        :rtype: int
+        """
+        if self.stack == []:
+            raise IndexError('Empty Stack')
+        return self.stack[-1][1]
+
+
+'''
+#2. two-stack method (60ms, beats 99%) Best Solution
 Time: O(1)    Space: O(n)
 '''
 class MinStack:
@@ -83,6 +134,7 @@ class MinStack:
     def push(self, x: int) -> None:
         self.stack.append(x)
         # Update stack_min if it's empty or x <= its last element, and put it at its end
+        # Duplicate minimum values should be pushed to self.stack_min as well(to be popped)
         if not self.stack_min or x <= self.stack_min[-1]:
             self.stack_min.append(x)
 
