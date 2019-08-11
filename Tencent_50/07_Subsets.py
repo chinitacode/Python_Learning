@@ -30,6 +30,7 @@ def subsets(nums):
     return result
 
 #Use backtracking
+# O(2^n)
 def subsets_bk(nums):
     lst,result = [],[]
     def helper(result,lst,nums,pos):
