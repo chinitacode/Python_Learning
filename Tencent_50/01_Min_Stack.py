@@ -17,9 +17,59 @@ minStack.getMin();   --> Returns -3.
 minStack.pop();
 minStack.top();      --> Returns 0.
 minStack.getMin();   --> Returns -2.
-'''
 
-# two-stack method (60ms, beats 99%)
+#1. push self-defined data structure '(v, min)' into stack recording current minimum value each time
+Time: O(1)    Space: O(n)
+Runtime: 48 ms, faster than 94.53% of Python online submissions for Min Stack.
+Memory Usage: 18 MB, less than 6.67% of Python online submissions for Min Stack.
+'''
+import sys
+
+class NodeWithMin:
+    def __init__(self, v, min):
+        self.value = v
+        self.min = min
+
+class MinStack(object):
+
+    def __init__(self):
+        """
+        initialize your data structure here.
+        """
+        self.stack = []
+
+    def push(self, x):
+        """
+        :type x: int
+        :rtype: None
+        """
+        newMin = min(x, self.getMin())
+        self.stack.append(NodeWithMin(x, newMin))
+
+    def pop(self):
+        """
+        :rtype: None
+        """
+        return self.stack.pop().value
+
+    def top(self):
+        """
+        :rtype: int
+        """
+        return self.stack[-1].value
+
+    def getMin(self):
+        """
+        :rtype: int
+        """
+        if self.stack == []:
+            return sys.maxsize
+        return self.stack[-1].min
+
+'''
+#2. two-stack method (60ms, beats 99%)
+Time: O(1)    Space: O(n)
+'''
 class MinStack:
     # To be able to retrieve the minimum value in O(1),
     # we need another stack to record the minimum value
@@ -53,18 +103,13 @@ class MinStack:
             return None
         return self.stack_min[-1]
 
-# Your MinStack object will be instantiated and called as such:
-# obj = MinStack()
-# obj.push(x)
-# obj.pop()
-# param_3 = obj.top()
-# param_4 = obj.getMin()
-
-# Method2: define a variable minEle that stores the current minimum element in the stack
+'''
+#3. Method: define a variable minEle that stores the current minimum element in the stack
 # The key is push “2x – minEle” into the stack instead of x
 # so that previous minimum element can be retrieved using current minEle and its value stored in stack
 # Source: https://www.geeksforgeeks.org/design-a-stack-that-supports-getmin-in-o1-time-and-o1-extra-space/
 # 76ms, beats 53%
+'''
 class MinStack:
 
     def __init__(self):
@@ -107,7 +152,6 @@ class MinStack:
 
     def getMin(self) -> int:
         return self.min
-
 
 # Your MinStack object will be instantiated and called as such:
 # obj = MinStack()
