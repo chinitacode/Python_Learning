@@ -307,3 +307,48 @@ class Node:
         self.prev = prev
         self.value = value
         self.next = next
+
+
+
+'''
+239. Sliding Window Maximum (Hard)
+O(n) solution using deque
+append result only if it is a full window
+'''
+from collections import deque
+class Solution(object):
+    def maxSlidingWindow(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: List[int]
+        """
+        q = deque()
+        result = []
+        for i in range(len(nums)):
+            # pop it if the first/left (max) element is out of the current window
+            if q and i - q[0] == k:
+                q.popleft()
+
+            # Can only pop element of deque when it's not empty
+            while q:
+                # pop useles elements from last/right of the queue
+                if nums[q[-1]] < nums[i]:
+                    q.pop()
+                # if the right side ele is less than q[-1], break the outer for loop
+                else:
+                    break
+            # Not adding index of ele less than q[-1]
+            q.append(i)
+            # Start adding result when it's a full window
+            if i >= k-1: # i == k-1 is the beginning of a full window
+                result.append(nums[q[0]])
+
+        return result
+
+'''
+Documentation about Deque:
+https://docs.python.org/2/library/collections.html#collections.deque
+https://www.geeksforgeeks.org/deque-in-python/
+https://pymotw.com/2/collections/deque.html
+'''
