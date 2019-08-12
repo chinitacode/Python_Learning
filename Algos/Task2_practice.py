@@ -308,12 +308,20 @@ class Node:
         self.value = value
         self.next = next
 
-
-
 '''
 239. Sliding Window Maximum (Hard)
 O(n) solution using deque
-append result only if it is a full window
+
+Keep indexes of good candidates in deque d.
+The indexes in d are from the current window, they're increasing,
+and their corresponding nums are decreasing.
+Then the first deque element is the index of the largest window value.
+
+For each index i:
+Pop (from the end) indexes of smaller elements (they'll be useless).
+Append the current index.
+Pop (from the front) the index i - k, if it's still in the deque (it falls out of the window).
+If our window has reached size k, append the current window maximum to the output.
 '''
 from collections import deque
 class Solution(object):
@@ -335,7 +343,7 @@ class Solution(object):
                 # pop useles elements from last/right of the queue
                 if nums[q[-1]] < nums[i]:
                     q.pop()
-                # if the right side ele is less than q[-1], break the outer for loop
+                # if the right side ele is less than q[-1], break the while loop
                 else:
                     break
             # Not adding index of ele less than q[-1]
@@ -345,8 +353,26 @@ class Solution(object):
                 result.append(nums[q[0]])
 
         return result
-
+# Or:
+def maxSlidingWindow(self, nums, k):
+    d = collections.deque()
+    out = []
+    for i, n in enumerate(nums):
+        while d and nums[d[-1]] < n:
+            d.pop()
+        d += i,
+        if d[0] == i - k:
+            d.popleft()
+        if i >= k - 1:
+            out += nums[d[0]],
+    return out
 '''
+Last three lines could be this, but for relatively large k it would waste space:
+
+        out += nums[d[0]],
+    return out[k-1:]
+
+
 Documentation about Deque:
 https://docs.python.org/2/library/collections.html#collections.deque
 https://www.geeksforgeeks.org/deque-in-python/
