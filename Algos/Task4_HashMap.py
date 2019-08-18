@@ -69,7 +69,7 @@ class chained_hash:
         self.T[self.hash_h(x.key)].list_delete(x)
     def hash_h(self,key):
         return key%12
- 
+
 class Node:
     def __init__(self,key):
         self.key=key
@@ -103,7 +103,24 @@ class DoublyLinkedList:
         if x.next !=None:
             x.next.prev=x.prev
 
-
+'''
+>>> T=[]
+>>> x=DoublyNode(None,None,13)
+>>> ch=chained_hash(T,12)
+>>> ch.insert(x)
+>>> x=DoublyNode(None,None,25)
+>>> ch.insert(x)
+>>> y=ch.search(25)
+>>> y.key
+25
+>>> ch.delete(y)
+>>> ch.T[1].head
+<__main__.DoublyNode object at 0x038E8890>
+>>> ch.T[1].head.key
+13
+>>> ch.T[1].head.next
+>>> 
+'''
 
 '''
     2. 实现一个 LRU 缓存淘汰算法
