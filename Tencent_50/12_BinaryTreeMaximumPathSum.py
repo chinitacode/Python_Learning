@@ -1,6 +1,30 @@
 '''
+124. Binary Tree Maximum Path Sum [Hard]
+Given a non-empty binary tree, find the maximum path sum.
+For this problem, a path is defined as any sequence of nodes
+from some starting node to any node in the tree along the parent-child connections.
+The path must contain at least one node and does not need to go through the root.
+
+Example 1:
+Input: [1,2,3]
+       1
+      / \
+     2   3
+Output: 6
+
+Example 2:
+Input: [-10,9,20,null,null,15,7]
+   -10
+   / \
+  9  20
+    /  \
+   15   7
+Output: 42
+
+Solution:
 Divide and Conquer + DFS Method with Helper Function updating a "global" maximum
 Time: O(N);  Space: O(log(N)) = height of the binary tree
+
 1.因为一条路径不能返回着走，所以在该节点不为最终确定路径的根节点时，
   左右两个分支只能选一条。
   如：
