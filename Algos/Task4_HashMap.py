@@ -48,7 +48,60 @@
     Java:链接法(两个满载率：0.75， 0.5)
 
 '''
+class chained_hash:
+    def __init__(self,T=[],size=0):
+        if len(T)==0:
+            self.T=[None for i in range(size)]
+        else:
+            self.T=T
+        self.size=size
+    def search(self,k):
+        if self.T[self.hash_h(k)]!=None:
+            x=self.T[self.hash_h(k)].list_search(k)
+            return x
+        return None
+    def insert(self,x):
+        if self.T[self.hash_h(x.key)]==None:
+            self.T[self.hash_h(x.key)]=DoublyLinkedList(x)
+        else:
+            self.T[self.hash_h(x.key)].list_insert(x)
+    def delete(self,x):
+        self.T[self.hash_h(x.key)].list_delete(x)
+    def hash_h(self,key):
+        return key%12
+ 
+class Node:
+    def __init__(self,key):
+        self.key=key
 
+#####双向链表####
+class DoublyNode:
+    def __init__(self,n_prev,n_next,key):
+        self.prev=n_prev
+        self.next=n_next
+        self.key=key
+
+class DoublyLinkedList:
+    def __init__(self,head):
+        self.head=head
+    def list_search(self,k):
+        x=self.head
+        while x !=None and x.key!=k:
+            x=x.next
+        return x
+    def list_insert(self,x):
+        x.next=self.head
+        if self.head != None:
+            self.head.prev=x
+        self.head=x
+        x.prev=None
+    def list_delete(self,x):
+        if x.prev!=None:
+            x.prev.next=x.next
+        else:
+            self.head=x.next
+        if x.next !=None:
+            x.next.prev=x.prev
 
 
 
