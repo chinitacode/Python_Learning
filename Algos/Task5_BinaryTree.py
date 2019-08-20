@@ -9,80 +9,117 @@
 '''
 #1.
 class Node:
-    __slots__ = '_item' , '_left' , '_right'
+    def __init__(self, item, left = None, right = None):
+        self.item = item
+        self.left = left
+        self.right = right
 
-    def __init__ (self, item, left=None, right=None):
-        self._item = item
-        self._left = left
-        self._right = right
+class BST:
+    def __init__(self, root = None):
+        self.root = root
 
-class BinarySearchTree:
-    def __init__ (self, root=None):
-        self._root = root
-
-    # Get methods
+    # Get methods (pre-order traversal)
+    # Time: Average: O(log(n+1)) = height(如果是个完整的二叉树)
+    #       Worst: O(n)(若只是单边二叉树)
+    '''
+    ### Recursive Method ###
     def get(self, key):
-        return self.__get(self._root, key);
-
-    def __get(self, node, key): # helper
-        if (node is None):
-            return None
-        if (key == node._item):
-            return node._item
-        if (key < node._item):
-            return self.__get(node._left, key)
-        else:
-            return self.__get(node._right, key)
-
-    # add methods
-    def add(self, value):
-        self._root = self.__add(self._root, value)
-
-    def __add(self, node, value): # return node ,helper
-        if (node is None):
-            return Node(value)
-        if (value == node._item):
-            pass
-        else:
-            if (value < node._item):
-                node._left = self.__add(node._left, value)
-            else:
-                node._right = self.__add(node._right, value)
-        return node
-
-    # remove methods
-    def remove(self, key):
-        self._root = self.__remove(self._root, key)
-
-    def __remove(self, node, key):  # helper
+        return self._get(self.root, key)
+    # helper
+    def _get(self, node, key):
         if node is None:
             return None
-        if (key < node._item):
-            node._left = self.__remove(node._left, key)
-        elif (key > node._item):
-            node._right = self.__remove(node._right, key)
+        if key == node.item:
+            return node.item
+        if key < node.item:
+            return self._get(node.left, key)
         else:
-            if (node._left is None):
-                node = node._right  # if right is None,  node = None; case 1: no child
-                                    # if right is not None, node = node._right; case 2: one child
-            elif (node._right is None):
-                node = node._left
+            return self._get(node.right, key)
+    '''
+    ### Iterative Method ###
+    def get(self, key):
+        node = self.root
+        while node is not None:
+            if key == node.item:
+                return node.item
+            if key < node.item:
+                node = node.left
             else:
-                node._item = self.__get_max(node._left)
-                node._left = self.__remove(node._left, node._item)
+                node = node.right
+        return None
+    '''
+    ### Recursive Method ###
+    def add(self, key):
+        self.root = self._add(self.root, key)
 
+    def _add(self, node, key):
+        if node is None:
+            return Node(key)
+        if key == node.item:
+            return
+        if key < node.item:
+            #需要把新加的Node给连接起来
+            node.left = self._add(node.left, key)
+        else:
+            node.right = self._add(node.right, key)
+        #如果不return，则_add()会返回None，导致self.root = None
+        return node
+    '''
+    ### Iterative Method ###
+    def add(self, key):
+        node = self.root
+        #while node is not leaf:
+        while node.left or node.right is not None:
+            if key == node.item:
+                return
+            if key < node.item:
+                node = node.left
+            else:
+                node = node.right
+        if key < node.item:
+            node.left = Node(key)
+        else:
+            node.right = Node(key)
+
+    def remove(self, key):
+        self.root = self._remove(self.root, key)
+
+    def _remove(self, node, key):
+        if node is None:
+            return
+        if key < node.item:
+            node.left = self._remove(node.left, key)
+        elif key > node.item:
+            node.right = self._remove(node.right, key)
+        else:
+            if node.right is None:
+                node = node.left
+            elif node.left is None:
+                node = node.right
+            else:
+                node.item = self._get_max(node.left)
+                node.left = self._remove(node.left, node.item)
         return node
 
-    # get max/min methods
     def get_max(self):
-        return self.__get_max(self._root)
+        return self._get_max(self.root)
 
-    def __get_max(self, node): # helper
-        if (node is None):
+    def _get_max(self, node):
+        if node is None:
             return None
-        while (node._right is not None):
-            node = node._right
-        return node._item
+        while node.right:
+            node = node.right
+        return node.item
+
+    def get_min(self):
+        return self._get_min(self.root)
+
+    def _get_min(self, node):
+        if node is None:
+            return None
+        while node.left:
+            node = node.left
+        return node.item
 
     # Traversal Methods
     def print_inorder(self):
