@@ -147,6 +147,7 @@ class Solution(object):
 
 '''
 Method3: Generator
+Time: O(k), Space: O(1)
 Code1
 Runtime: 44 ms, faster than 61.80% of Python online submissions for Kth Smallest Element in a BST.
 Memory Usage: 19.6 MB, less than 56.52% of Python online submissions for Kth Smallest Element in a BST.
