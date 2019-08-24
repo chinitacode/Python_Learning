@@ -161,6 +161,7 @@ class BST:
 ###### 2.遍历 ######
 --------------------------------------------------------------------
 1. 前/先序遍历（pre-order traversal）:
+---------------------------------------------------------------------
     先（打印）parent,再（打印）child
     根结点 ---> 左子树 ---> 右子树
 
@@ -178,15 +179,25 @@ class BST:
             for each child w of v:
                 preOrder(w)
 
-***Note***
+--------------------
+---Recursive code---
+--------------------
+'''
+def preOrder(self, root):
+    if root == None:
+        return
+    print root.val
+    self.preOrder(root.left)
+    self.preOrder(root.right)
+
+'''
+--------------------
+---Iterative code---
+--------------------
 preOrder每次都将遇到的节点压入栈，当左子树遍历完毕后才从栈中弹出最后一个访问的节点(后进先出，但是不影响先打印root)，
 访问其右子树。
 在同一层中，不可能同时有两个节点压入栈，因此栈的大小空间为O(h)，h为二叉树高度。
 时间方面，每个节点都被压入栈一次，弹出栈一次，访问一次，复杂度为O(n)。
-
---------------------
----Iterative code---
---------------------
 '''
 def preOrder(self, root):
     if root == None:
@@ -205,17 +216,6 @@ def preOrder(self, root):
         node = myStack.pop()
         # 开始查看它的右子树，若为空，则继续pop栈，接着遍历右子树
         node = node.right
-'''
---------------------
----Recursive code---
---------------------
-'''
-def preOrder(self, root):
-    if root == None:
-        return
-    print root.val
-    self.preOrder(root.left)
-    self.preOrder(root.right)
 
 '''
 144. Binary Tree Preorder Traversal
@@ -242,24 +242,33 @@ class Solution(object):
             node = node.right
         return res
 '''
-Optimized iteration:
+Optimized iteration with stack:
+
+初始化时先把root加入栈，pop出来处理其val，然后加右子树（后出）入栈，再加左子树（先出）入栈。
+当node为None（即左子树为空），才会pop右子树。
+
 > Time Complexity O(n)
-> Space Complexity O(1)
+> Space Complexity O(h)
 Runtime: 8 ms, faster than 99.07% of Python online submissions for Binary Tree Preorder Traversal.
 Memory Usage: 11.8 MB, less than 22.86% of Python online submissions for Binary Tree Preorder Traversal.
 '''
 class Solution(object):
     def preorderTraversal(self, root):
-        self.res = []
-        self.dfs(root)
-        return self.res
-
-    def dfs(self, root):
-        if not root:
-            return
-        self.res.append(root.val)
-        self.dfs(root.left)
-        self.dfs(root.right)
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        res = []
+        stack = [root]
+        while stack:
+            node = stack.pop()
+            if node:
+                res.append(node.val)
+                #先加右子树，后出
+                stack.append(node.right)
+                #后加左子树，先出
+                stack.append(node.left)
+        return res
 
 '''
 DFS Recursion using helper and global attribute
@@ -295,25 +304,8 @@ class Solution(object):
 
 '''
 ---------------------------------------------------------------------
-### 后序遍历（post-order traversal）:
-    先（打印）child,再（打印）parent
-    左子树 ---> 右子树 ---> 根结点
-
-                   9
-                /     \
-              /         \
-             5           8
-           /   \        /  \
-          1     4      6    7
-              /   \
-             2     3
-
-Algorithm postOrder(v):
-    for each child w of v:
-        postOrder(w)
-    visit(v)
+2.### 中序遍历/顺序遍历(in-order traversal)
 ---------------------------------------------------------------------
-### 中序遍历/顺序遍历(in-order traversal)
     左子树---> 根结点 ---> 右子树
     *在二叉树的顺序遍历中，常常会发生先遇到的节点到后面再访问的情况，
     这和先进后出的栈的结构很相似，因此在非递归的实现方法中，我们最常使用的数据结构就是栈。
@@ -333,8 +325,214 @@ Algorithm inOrder(v):
     visit(v)
     if hasRight(v):
         inOrder(right(v))
+
+--------------------
+---Recursive code---
+--------------------
+'''
+def inOrder(self, root):
+    if root == None:
+        return
+    self.inOrder(root.left)
+    print root.val
+    self.inOrder(root.right)
+
+'''
+--------------------
+---Iterative code---
+--------------------
+'''
+def inOrder(self, root):
+    if root == None:
+        return
+    myStack = []
+    node = root
+    while node or myStack:
+        while node:
+            # 从根节点开始，一直找它的左子树
+            myStack.append(node)
+            node = node.left
+        # while结束表示当前节点node为空，即前一个节点没有左子树了
+        node = myStack.pop()
+        print node.val
+        # 开始查看它的右子树
+        node = node.right
+'''
+94. Binary Tree Inorder Traversal
+Recursion: DFS + Helper
+Runtime: 20 ms, faster than 40.34% of Python online submissions for Binary Tree Inorder Traversal.
+Memory Usage: 11.9 MB, less than 20.00% of Python online submissions for Binary Tree Inorder Traversal.
+'''
+class Solution(object):
+    def inorderTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        self.res = []
+        self.dfs(root)
+        return self.res
+
+    def dfs(self, node):
+        if node is None: return None
+        self.dfs(node.left)
+        self.res.append(node.val)
+        self.dfs(node.right)
+
+'''
+Iteration： DFS + Stack
+先把迭代到最左边的叶子节点，把所有途中的root放进stack，当左边走不通了，开始往res里面存数，并往右边走。
+Runtime: 12 ms, faster than 92.50% of Python online submissions for Binary Tree Inorder Traversal.
+Memory Usage: 11.9 MB, less than 10.00% of Python online submissions for Binary Tree Inorder Traversal.
+'''
+class Solution(object):
+    def inorderTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if root is None: return []
+        node = root
+        res = []
+        myStack = []
+        #先从top到bottom把最底部的左子树加入栈，
+        #再pop出来处理其值（append到res），再加右子树
+        while myStack or node:
+            while node:
+                myStack.append(node)
+                node = node.left
+            node = myStack.pop()
+            res.append(node.val)
+            node = node.right
+        return res
+
+'''
 ---------------------------------------------------------------------
-### 层次遍历
+3.### 后序遍历（post-order traversal）:
+---------------------------------------------------------------------
+    先（打印）child,再（打印）parent
+    左子树 ---> 右子树 ---> 根结点
+
+                   9
+                /     \
+              /         \
+             5           8
+           /   \        /  \
+          1     4      6    7
+              /   \
+             2     3
+
+Algorithm postOrder(v):
+    for each child w of v:
+        postOrder(w)
+    visit(v)
+
+--------------------
+---Recursive code---
+--------------------
+'''
+def postOrder(self, root):
+    if root == None:
+        return
+    self.postOrder(root.left)
+    self.postOrder(root.right)
+    print root.val
+
+'''
+--------------------
+---Iterative code---
+--------------------
+从直觉上来说，后序遍历对比中序遍历难度要增大很多。因为中序遍历节点序列有一点的连续性，而后续遍历则感觉有一定的跳跃性。
+先左，再右，最后才中间节点；访问左子树后，需要跳转到右子树，右子树访问完毕了再回溯至根节点并访问之
+'''
+def postorder(self, root):
+    if root == None:
+        return
+    myStack1 = []
+    myStack2 = []
+    node = root
+    myStack1.append(node)
+    while myStack1:
+    # 这个while循环的功能是找出后序遍历的逆序，存在myStack2里面
+        node = myStack1.pop()
+        if node.left:
+            myStack1.append(node.left)
+        if node.right:
+            myStack1.append(node.right)
+        myStack2.append(node)
+    while myStack2:
+    # 将myStack2中的元素出栈，即为后序遍历次序
+        print myStack2.pop().val
+
+'''
+145. Binary Tree Postorder Traversal [Hard]
+Recursive solution: DFS + Helper
+Runtime: 8 ms, faster than 99.21% of Python online submissions for Binary Tree Postorder Traversal.
+Memory Usage: 11.8 MB, less than 25.00% of Python online submissions for Binary Tree Postorder Traversal.
+'''
+class Solution(object):
+    def postorderTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if root is None: return []
+        self.res = []
+        self.dfs(root)
+        return self.res
+
+    def dfs(self, node):
+        if node is None: return None
+        self.dfs(node.left)
+        self.dfs(node.right)
+        self.res.append(node.val)
+
+'''
+Iteration:
+Runtime: 12 ms, faster than 93.40% of Python online submissions for Binary Tree Postorder Traversal.
+Memory Usage: 11.7 MB, less than 87.50% of Python online submissions for Binary Tree Postorder Traversal.
+'''
+class Solution(object):
+    def postorderTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if root is None: return []
+        myStack1 = [root]
+        myStack2 = []
+        res = []
+        node = root
+        while myStack1:
+            node = myStack1.pop()
+            if node.left:
+                myStack1.append(node.left)
+            if node.right:
+                myStack1.append(node.right)
+            myStack2.append(node)
+        while myStack2:
+            res.append(myStack2.pop().val)
+        return res
+#Or:(slower)
+class Solution(object):
+    def postorderTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        res, stack = [], [root]
+        while stack:
+            node = stack.pop()
+            if node:
+                res.append(node.val)
+                stack.append(node.left)
+                stack.append(node.right)
+        return res[::-1]
+
+'''
+---------------------------------------------------------------------
+4.### 层次遍历 (Level-order Traversal):
+---------------------------------------------------------------------
 
 
 ---------------------------------------------------------------------
@@ -352,6 +550,7 @@ Algorithm inOrder(v):
 > Space Complexity O(h)
 
 错误代码(Buggy Code)：
+'''
 class Solution(object):
     def isValidBST(self, root):
         return self.helper(root)
@@ -365,6 +564,8 @@ class Solution(object):
         left = self.helper(node.left)
         right = self.helper(node.right)
         return left and right
+
+'''
 上面代码看起来好像也没什么毛病，但以下这种情况是过不了的
 
     5
@@ -394,8 +595,9 @@ ok，概念弄懂了，如何解决这个问题呢？我们可以从顶层开始
 所以5告诉右边4的信息/区间是：(5 , infinite)
 
 然后我们要做的就是把这些信息带入到我们的代码里，我们把区间的左边取名lower_bound, 右边取名upper_bound
-这样才有了LC被复制到烂的标准答案
+这样才有了LC被复制到烂的标准答案:
 
+'''
 class Solution(object):
     def isValidBST(self, root):
         return self.helper(root, -float('inf'), float('inf'))
@@ -408,7 +610,7 @@ class Solution(object):
         right = self.helper(node.right, node.val, upper_bound)
         return left and right
 
-或者更直观的写法：
+#或者更直观的写法：
 
 def isValidBST(self, root, floor=float('-inf'), ceiling=float('inf')):
     if not root:
@@ -419,13 +621,13 @@ def isValidBST(self, root, floor=float('-inf'), ceiling=float('inf')):
     return self.isValidBST(root.left, floor, root.val) and self.isValidBST(root.right, root.val, ceiling)
 
 
-这题呢，还有另外一个根据BST性质进行Inorder操作的答案
-
+'''
+还有另外一个根据BST性质进行Inorder操作的答案
 暴力解法：
 
 利用数组储存inorder过的数，如果出现重复，或者数组不等于sorted(arr)，证明不是Valid Tree
 这个解法比较易读，如果对Space Complexity要求不严格，可以通过比对数组里面的数而不是sorted(arr)来达到O(N)时间复杂。
-
+'''
 class Solution(object):
     def isValidBST(self, root):
         self.arr = []
@@ -446,10 +648,10 @@ class Solution(object):
         return False
     # in the left branch, root is the new ceiling; contrarily root is the new floor in right branch
     return self.isValidBST(root.left, floor, root.val) and self.isValidBST(root.right, root.val, ceiling)
+'''
 O(1) Space解法：
-
 在上面的算法里进行了优化，每次只需要将当前root.val和上次储存的self.last比对即可知道是否满足条件。然后设立self.flag用于返回。
-
+'''
 class Solution(object):
     def isValidBST(self, root):
         self.last = -float('inf')
@@ -465,8 +667,6 @@ class Solution(object):
         self.last = root.val
         self.inorder(root.right)
 '''
-
-'''
 100. Same Tree
 > 类型：DFSF分制
 > Time Complexity O(N)
@@ -474,8 +674,8 @@ class Solution(object):
 
 Runtime: 32 ms, faster than 92.27% of Python3 online submissions for Same Tree.
 Memory Usage: 13.9 MB, less than 5.72% of Python3 online submissions for Same Tree.
-
 '''
+
 class Solution:
     def isSameTree(self, p: TreeNode, q: TreeNode) -> bool:
         if not p and not q:
