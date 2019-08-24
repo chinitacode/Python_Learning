@@ -233,16 +233,12 @@ Algorithm inOrder(v):
 > 类型：DFS遍历
 > Time Complexity O(n)
 > Space Complexity O(h)
-此题收录在Github
 
-LC里面各种花式炫技巧，炫答案，但没看到正儿八经给初学者解释关于Min Max运用的原理，这里公瑾给大家带来一个我最先犯的错误，然后是如何改进的。
-
-错误代码(Buggy Code)
-
+错误代码(Buggy Code)：
 class Solution(object):
     def isValidBST(self, root):
-        return self.helper(root) 
-    
+        return self.helper(root)
+
     def helper(self, node):
         if not node: return True
         if node.left and node.left.val >= node.val:
@@ -250,7 +246,7 @@ class Solution(object):
         if node.right and node.right.val <= node.val:
             return False
         left = self.helper(node.left)
-        right = self.helper(node.right)        
+        right = self.helper(node.right)
         return left and right
 上面代码看起来好像也没什么毛病，但以下这种情况是过不了的
 
@@ -286,7 +282,7 @@ ok，概念弄懂了，如何解决这个问题呢？我们可以从顶层开始
 class Solution(object):
     def isValidBST(self, root):
         return self.helper(root, -float('inf'), float('inf'))
-    
+
     def helper(self, node, lower_bound, upper_bound):
         if not node: return True
         if node.val >= upper_bound or node.val <= lower_bound:
@@ -294,11 +290,11 @@ class Solution(object):
         left = self.helper(node.left, lower_bound, node.val)
         right = self.helper(node.right, node.val, upper_bound)
         return left and right
-        
+
 或者更直观的写法：
 
 def isValidBST(self, root, floor=float('-inf'), ceiling=float('inf')):
-    if not root: 
+    if not root:
         return True
     if root.val <= floor or root.val >= ceiling:
         return False
@@ -318,16 +314,16 @@ class Solution(object):
         self.arr = []
         self.inorder(root)
         return self.arr == sorted(self.arr) and len(self.arr) == len(set(self.arr))
-    
+
     def inorder(self, root):
         if not root: return
         self.inorder(root.left)
         self.arr.append(root.val)
         self.inorder(root.right)
-        
+
     #
     def isValidBST(self, root, floor=float('-inf'), ceiling=float('inf')):
-    if not root: 
+    if not root:
         return True
     if root.val <= floor or root.val >= ceiling:
         return False
@@ -343,7 +339,7 @@ class Solution(object):
         self.flag = True
         self.inorder(root)
         return self.flag
-    
+
     def inorder(self, root):
         if not root: return
         self.inorder(root.left)
@@ -377,7 +373,7 @@ def isSameTree(self, p, q):
     #Return True only if p and q are both None else return False(because it's reference comparison)
     return p is q
 
-# DFS with stack        
+# DFS with stack
 def isSameTree2(self, p, q):
     stack = [(p, q)]
     while stack:
@@ -392,8 +388,8 @@ def isSameTree2(self, p, q):
             stack.append((node1.right, node2.right))
             stack.append((node1.left, node2.left))
     return True
- 
-# BFS with queue    
+
+# BFS with queue
 def isSameTree3(self, p, q):
     queue = [(p, q)]
     while queue:
@@ -413,7 +409,7 @@ def isSameTree3(self, p, q):
 '''
 101. Symmetric Tree
 Method1: Preorder + Recursion
-这道题具体的Recursion Rule不是传递Root本身，而是对两个子孩子的比较，所以Helper的参数定义为root.left 和 root.right. 
+这道题具体的Recursion Rule不是传递Root本身，而是对两个子孩子的比较，所以Helper的参数定义为root.left 和 root.right.
 然后根据题目的特性，在每一层往下传递之前要做比较，所以是preorder的写法，先写比较的几种格式，然后在做递归。递归向上返回的参数是一个Boolean。
 时间复杂度 : O(N) 空间复杂度 : O(N) or O(Height)
 
@@ -425,7 +421,7 @@ class Solution:
         if not root:
             return True
         return self.is_mirror(root.left, root.right)
-    
+
     def is_mirror(self, p, q):
         if not p and not q:
             return True
@@ -441,13 +437,13 @@ class Solution:
     def isSymmetric(self, root: TreeNode) -> bool:
         def isSym(L,R):
             if not L and not R: return True
-            if L and R and L.val == R.val: 
+            if L and R and L.val == R.val:
                 return isSym(L.left, R.right) and isSym(L.right, R.left)
             return False
         if root is None:
             return True
         return isSym(root.left, root.right)
-'''    
+'''
 Method2: Preorder + Iteration using Stack(slow)
 '''
 class Solution:
@@ -466,7 +462,7 @@ class Solution:
                 stack.append((left.right, right.left))
             else:
                 return False
-            
+
 '''
 Method3: Level-order + stack
 '''
@@ -484,7 +480,7 @@ def isSymmetric(self, root):
             return False
         else:
             last = current
-    
+
 def is_list_symmetric(self, lst):
     head, tail = 0, len(lst) - 1
     while head < tail:
