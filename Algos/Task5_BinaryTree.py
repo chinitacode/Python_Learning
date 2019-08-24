@@ -157,9 +157,10 @@ class BST:
 
 
 '''
+--------------------------------------------------------------------
 ###### 2.遍历 ######
 --------------------------------------------------------------------
-### 前/先序遍历（pre-order traversal）:
+1. 前/先序遍历（pre-order traversal）:
     先（打印）parent,再（打印）child
     根结点 ---> 左子树 ---> 右子树
 
@@ -177,6 +178,122 @@ class BST:
             for each child w of v:
                 preOrder(w)
 
+***Note***
+preOrder每次都将遇到的节点压入栈，当左子树遍历完毕后才从栈中弹出最后一个访问的节点(后进先出，但是不影响先打印root)，
+访问其右子树。
+在同一层中，不可能同时有两个节点压入栈，因此栈的大小空间为O(h)，h为二叉树高度。
+时间方面，每个节点都被压入栈一次，弹出栈一次，访问一次，复杂度为O(n)。
+
+--------------------
+---Iterative code---
+--------------------
+'''
+def preOrder(self, root):
+    if root == None:
+        return
+    myStack = []
+    node = root
+    while node or myStack:
+        while node:
+            # 从根节点开始，一直找它的左子树
+            print node.val
+            # 把node压入栈只是为了当左边为空时回到右子树
+            myStack.append(node)
+            # 继续遍历左子树，直到node为空跳出当前循环
+            node = node.left
+        # while结束表示当前节点node为空，即前一个节点没有左子树了
+        node = myStack.pop()
+        # 开始查看它的右子树，若为空，则继续pop栈，接着遍历右子树
+        node = node.right
+'''
+--------------------
+---Recursive code---
+--------------------
+'''
+def preOrder(self, root):
+    if root == None:
+        return
+    print root.val
+    self.preOrder(root.left)
+    self.preOrder(root.right)
+
+'''
+144. Binary Tree Preorder Traversal
+DFS Stack Iteration
+Runtime: 20 ms, faster than 41.38% of Python online submissions for Binary Tree Preorder Traversal.
+Memory Usage: 11.7 MB, less than 68.57% of Python online submissions for Binary Tree Preorder Traversal.
+'''
+class Solution(object):
+    def preorderTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if root is None: return []
+        node = root
+        myStack = []
+        res = []
+        while node or myStack:
+            while node:
+                res.append(node.val)
+                myStack.append(node)
+                node = node.left
+            node = myStack.pop()
+            node = node.right
+        return res
+'''
+Optimized iteration:
+> Time Complexity O(n)
+> Space Complexity O(1)
+Runtime: 8 ms, faster than 99.07% of Python online submissions for Binary Tree Preorder Traversal.
+Memory Usage: 11.8 MB, less than 22.86% of Python online submissions for Binary Tree Preorder Traversal.
+'''
+class Solution(object):
+    def preorderTraversal(self, root):
+        self.res = []
+        self.dfs(root)
+        return self.res
+
+    def dfs(self, root):
+        if not root:
+            return
+        self.res.append(root.val)
+        self.dfs(root.left)
+        self.dfs(root.right)
+
+'''
+DFS Recursion using helper and global attribute
+> Time Complexity O(n)
+Runtime: 12 ms, faster than 93.43% of Python online submissions for Binary Tree Preorder Traversal.
+Memory Usage: 11.6 MB, less than 94.29% of Python online submissions for Binary Tree Preorder Traversal.
+'''
+class Solution(object):
+    def preorderTraversal(self, root):
+        self.res = []
+        self.dfs(root)
+        return self.res
+
+    def dfs(self, root):
+        if not root:
+            return
+        self.res.append(root.val)
+        self.dfs(root.left)
+        self.dfs(root.right)
+'''
+Recursion
+Runtime: 20 ms, faster than 41.38% of Python online submissions for Binary Tree Preorder Traversal.
+Memory Usage: 11.9 MB, less than 11.43% of Python online submissions for Binary Tree Preorder Traversal.
+'''
+class Solution(object):
+    def preorderTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if root is None: return []
+        return [root.val] + self.preorderTraversal(root.left) + self.preorderTraversal(root.right)
+
+'''
 ---------------------------------------------------------------------
 ### 后序遍历（post-order traversal）:
     先（打印）child,再（打印）parent
