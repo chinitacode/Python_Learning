@@ -489,6 +489,7 @@ class Solution(object):
 
 '''
 Iteration:
+Method1: 2 stacks
 Runtime: 12 ms, faster than 93.40% of Python online submissions for Binary Tree Postorder Traversal.
 Memory Usage: 11.7 MB, less than 87.50% of Python online submissions for Binary Tree Postorder Traversal.
 '''
@@ -513,7 +514,17 @@ class Solution(object):
         while myStack2:
             res.append(myStack2.pop().val)
         return res
-#Or:(slower)
+
+'''
+Method2: 1 stack (almost the same as method1)
+Use only one stack to store the preorder traversal,
+but revert the return list to post-order traversal in the end.
+Note: time can be wasted in the following code because empty children(None)
+can be added to stack to be handled.
+
+Runtime: 16 ms, faster than 73.42% of Python online submissions for Binary Tree Postorder Traversal.
+Memory Usage: 11.8 MB, less than 33.33% of Python online submissions for Binary Tree Postorder Traversal.
+'''
 class Solution(object):
     def postorderTraversal(self, root):
         """
@@ -525,9 +536,35 @@ class Solution(object):
             node = stack.pop()
             if node:
                 res.append(node.val)
+                #先进后出，在栈里排在右子树下面，但最后都会倒过来排
+                #左右空子树也会被先加入stack中再经循环pop掉，并不省时
                 stack.append(node.left)
                 stack.append(node.right)
         return res[::-1]
+'''
+#Optimized code:
+Runtime: 12 ms, faster than 93.36% of Python online submissions for Binary Tree Postorder Traversal.
+Memory Usage: 11.7 MB, less than 83.33% of Python online submissions for Binary Tree Postorder Traversal.
+'''
+class Solution(object):
+    def postorderTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if not root:
+            return []
+
+        result, stack = [], [root]
+        while stack:
+            node = stack.pop()
+            result.append(node.val)
+            if node.left:
+                stack.append(node.left)
+            if node.right:
+                stack.append(node.right)
+
+        return result[::-1]
 
 '''
 ---------------------------------------------------------------------
