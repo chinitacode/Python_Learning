@@ -1,8 +1,10 @@
 '''
 【分治】
 利用分治算法求一组数据的逆序对个数
-[思路]利用merge sort的解法
-
+[思路]
+利用merge sort的解法，讲数组分为左右两部分，
+分别进行排序和merge，在merge过程中就能得到逆序对数
+O(nlgn)
 '''
 def count_inversions(arr):
     if len(arr) <= 1: return arr, 0
