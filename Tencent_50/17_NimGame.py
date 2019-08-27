@@ -51,3 +51,69 @@ class Solution(object):
         :rtype: bool
         """
         return not n%4 == 0
+
+'''
+Method2(TLE): Recursion + memoization by hash map
+'''
+class Solution(object):
+    def canWinNim(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        self.dic = {1: True, 2: True, 3: True, 4: False}
+        def helper(n):
+            if n in self.dic:
+                return self.dic[n]
+            else:
+                self.dic[n] = not helper(n-1) and helper(n-2) and helper(n-3)
+            return self.dic[n]
+        return helper(n)
+
+#Or
+class Solution(object):
+    def canWinNim(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        res = [0, True, True, True, False]
+        if n < 5:
+            return res[n]
+        res += [0] * (n-4)
+        def helper(n):
+            if res[n] != 0:
+                return res[n]
+            for i in range(5, n+1):
+                res[i] = not (helper(i-1) and helper(i-2) and helper(i-3))
+            return res[n]
+        return helper(n)
+
+'''
+#or Just maintain the last three outcomes. Though TLE, but the best solution:
+Finished
+Runtime: 2108 ms
+Your input
+10009099
+Output
+true
+Expected
+true
+'''
+class Solution(object):
+    def canWinNim(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        if n <= 3:
+            return True
+        win = [True]*3
+        i = 4
+        while i <= n:
+            next_outcome = (not win[0]) or (not win[1]) or (not win[2])
+            win[0] = win[1]
+            win[1] = win[2]
+            win[2] = next_outcome
+            i = i + 1
+        return win[-1]
