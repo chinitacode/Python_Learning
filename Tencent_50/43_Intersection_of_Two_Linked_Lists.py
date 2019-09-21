@@ -101,7 +101,7 @@ class Solution(object):
 当A跑到终点时B还没有到，于是让A到B的起点开始继续跑，
 当B跑到终点时，让B回到A的起点继续跑，则A和B最后都会在交点相遇，
 因为都各自跑了skipA + intersection + skipB的距离。
-Time: O(len(skipA + intersection + skipB))
+Time: O(len(A) + len(B))
 Space: O(1)
 Runtime: 180 ms, faster than 95.74% of Python online submissions for Intersection of Two Linked Lists.
 Memory Usage: 41.9 MB, less than 16.00% of Python online submissions for Intersection of Two Linked Lists.
