@@ -26,7 +26,7 @@ step i : dp[i] = dp[i-1] + nums[i] if dp[i-1] > 0 else nums[i]
 
 e.g.
 input nums: [-2, 1, -3, 4, -1, 2, 1, -5, 4]
-final dp:   [-2, 1, -2, 4, 3, 5, 6, 1, 5]
+final dp:   [-2, 1, -2, 4,  3, 5, 6,  1, 5]
 '''
 class Solution:
     def maxSubArray(self, nums: List[int]) -> int:
@@ -55,6 +55,7 @@ class Solution:
 
 
 '''
+
 Runtime: 72 ms, faster than 92.57% of Python3 online submissions for Maximum Subarray.
 Memory Usage: 14.4 MB, less than 5.69% of Python3 online submissions for Maximum Subarray.
 '''
