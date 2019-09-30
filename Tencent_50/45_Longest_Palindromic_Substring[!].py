@@ -126,13 +126,13 @@ class Solution:
 
 
 '''
-[Method 3]: Manacher Algorithm
-Based on this article: http://articles.leetcode.com/2011/11/longest-palindromic-substring-part-ii.html
+[Method 3]: ***** Manacher Algorithm *****
+Based on this article: https://segmentfault.com/a/1190000003914228#articleHeader5
+Time: O(n), Space: O(n)
+Runtime: 92 ms, faster than 95.35% of Python3 online submissions for Longest Palindromic Substring.
+Memory Usage: 14 MB, less than 22.69% of Python3 online submissions for Longest Palindromic Substring.
 '''
 class Solution:
-    #Manacher algorithm
-    #http://en.wikipedia.org/wiki/Longest_palindromic_substring
-
     def longestPalindrome(self, s):
         # Transform S into T.
         # For example, S = "abba", T = "^#a#b#b#a#$".
@@ -140,9 +140,11 @@ class Solution:
         T = '#'.join('^{}$'.format(s))
         n = len(T)
         P = [0] * n
+        #C is the index of the center of the current palindrome;
+        #R is the index of the end position of the current palindrome;
         C = R = 0
         for i in range (1, n-1):
-            P[i] = (R > i) and min(R - i, P[2*C - i]) # equals to i' = C - (i-C)
+            P[i] = (R > i) and min(R - i, P[2*C - i]) # equals to j = C - (i-C),which is i´ centered at C
             # Attempt to expand palindrome centered at i
             while T[i + 1 + P[i]] == T[i - 1 - P[i]]:
                 P[i] += 1
