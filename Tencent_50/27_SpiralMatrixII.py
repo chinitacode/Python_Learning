@@ -10,53 +10,49 @@ Output:
  [ 1, 2, 3 ],
  [ 8, 9, 4 ],
  [ 7, 6, 5 ]
- 
- 
- 
-Solution 1: Build it inside-out 
 
-Start with the empty matrix, add the numbers in reverse order until we added the number 1. 
-Always rotate the matrix clockwise and add a top row:
 
-    ||  =>  |9|  =>  |8|      |6 7|      |4 5|      |1 2 3|
-                     |9|  =>  |9 8|  =>  |9 6|  =>  |8 9 4|
-                                         |8 7|      |7 6 5|
-'''
-
-def generateMatrix(self, n):
-    A, lo = [], n*n+1
-    while lo > 1:
-        lo, hi = lo - len(A), lo
-        A = [range(lo, hi)] + zip(*A[::-1])
-    return A
-While this isn't O(n^2), it's actually quite fast, presumably due to me not doing much in Python but relying on zip and range and + being fast. I got it accepted in 44 ms, matching the fastest time for recent Python submissions (according to the submission detail page).
-
-'''
-Solution 2: Ugly inside-out 
-
-Same as solution 1, but without helper variables. 
-Saves a line, but makes it ugly. 
-Also, because I access A[0][0], I had to handle the n=0 case differently.
-'''
-def generateMatrix(self, n):
-    A = [[n*n]]
-    while A[0][0] > 1:
-        A = [range(A[0][0] - len(A), A[0][0])] + zip(*A[::-1])
-    return A * (n>0)
-    
-'''
-Solution 3: Walk the spiral
-
-Initialize the matrix with zeros, then walk the spiral path and write the numbers 1 to n*n. 
+[Method 1]: Walk the spiral
+Iteration using direction of rows and columns.
+Initialize the matrix with zeros, then walk the spiral path and write the numbers 1 to n*n.
 Make a right turn when the cell ahead is already non-zero.
+
+Time: O(n**2), Space:O(n**2)
+Runtime: 36 ms, faster than 85.71% of Python3 online submissions for Spiral Matrix II.
+Memory Usage: 13.8 MB, less than 9.09% of Python3 online submissions for Spiral Matrix II.
+ '''
+class Solution:
+    def generateMatrix(self, n: int) -> List[List[int]]:
+        if n == 0: return []
+        matrix = [[0]*n for _ in range(n)]
+        row, col, di_r, di_c = 0, 0, 0, 1
+        for num in range(1, n*n+1):
+            matrix[row][col] = num
+            if matrix[(row+di_r) % n][(col+di_c) % n]:
+                di_r, di_c = di_c, -di_r
+            row += di_r
+            col += di_c
+        return matrix
+
 '''
-def generateMatrix(self, n):
-    A = [[0] * n for _ in range(n)]
-    i, j, di, dj = 0, 0, 0, 1
-    for k in xrange(n*n):
-        A[i][j] = k + 1
-        if A[(i+di)%n][(j+dj)%n]:
-            di, dj = dj, -di
-        i += di
-        j += dj
-    return A
+[Method 2]: walking within step pattern of [n, n-1, n-1, n-2, n-2 ..., 2, 2, 1, 1]
+If n is 5, step list will be [5, 4, 4, 3, 3, 2, 2, 1, 1],
+it means move forward 5 steps, turn right, move forward 4 steps,
+turn right, move forward 4 steps, turn right and so on.
+x axis is from left to right, y axis is from top to bottom, we start from point (-1, 0).
+
+Time: O(n**2),实际上是O(2n-1 + n**2)
+Space: O(n**2)
+Runtime: 40 ms, faster than 57.90% of Python3 online submissions for Spiral Matrix II.
+Memory Usage: 13.7 MB, less than 9.09% of Python3 online submissions for Spiral Matrix II.
+'''
+class Solution:
+    def generateMatrix(self, n: int) -> List[List[int]]:
+        if n == 0: return []
+        matrix, col, row, dc, dr, number = [[0] * n for i in range(n)], -1, 0, 1, 0, 0
+        for step in [i // 2 for i in range(2 * n, 1, -1)]:
+            for j in range(step):
+                col, row, number = col + dc, row + dr, number + 1
+                matrix[row][col] = number
+            dc, dr = -dr, dc # turn right
+        return matrix
