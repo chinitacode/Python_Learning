@@ -2,11 +2,14 @@
 【递归】
 - 1.编程实现斐波那契数列求值 f(n)=f(n-1)+f(n-2)
   1.2 解leetcode70.爬楼梯
+  1.3 解leetcode198.入室抢劫
 - 编程实现求阶乘 n!
 - 编程实现一组数据集合的全排列
 
-1.
-509. Fibonacci Number
+---------------------------------------
+#1.
+509. Fibonacci Number [Easy]
+---------------------------------------
 The Fibonacci numbers,
 commonly denoted F(n) form a sequence,
 called the Fibonacci sequence,
@@ -148,8 +151,10 @@ class Solution:
 
 
 '''
-1.2
+---------------------------------------
+#1.2
 70. Climbing Stairs [Easy]
+---------------------------------------
 [Method 1]: Recursion + Memorization using global attribute as dictionary (Top down)
 Time: O(n), Space: O(n)
 '''
@@ -194,3 +199,43 @@ class Solution:
         for i in range(1, n):
             curr, nxt = nxt, curr + nxt
         return curr
+
+
+'''
+---------------------------------------
+#1.3
+198. House Robber [Easy]
+---------------------------------------
+Recursive Solution: (Top down)
+强盗有两个选择： a).抢劫当前房子； b).不抢劫当前房子。
+如果选a,则强盗不能抢劫前一个房子，但是可以安全地抢劫前两个房子，
+并且获得最大收益为当前房子的价值和抢劫往前数两个房子时的最大收益；
+如果选b，则强盗可以获得抢劫前一个房子时的最大收益和接着抢劫挨着的房子。
+总结下来，获得的最大收益为以下的最大值：
+    1).现在房子的价值+抢劫往前数两个房子的收益
+    2).抢劫前一个房子的收益
+rob(i) = max( rob(n - 2) + currentHouseValue, rob(n - 1) )
+'''
+#Time Limit Exceeded
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        def recur(nums, n):
+            if n < 1: return 0
+            return max(recur(nums, n-2) + nums[n-1], recur(nums, n-1))
+        return recur(nums, len(nums))
+
+'''
+Optimized code: Recursion + Memorization (Top down)
+Time: O(n); Space: O(n)
+Runtime: 36 ms, faster than 80.99% of Python3 online submissions for House Robber.
+Memory Usage: 14 MB, less than 9.09% of Python3 online submissions for House Robber.
+'''
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        self.dict = {}
+        def recur(nums, n):
+            if n < 1: return 0
+            if n not in self.dict:
+                self.dict[n] = max(recur(nums, n-1), recur(nums, n-2) + nums[n-1])
+            return self.dict[n]
+        return recur(nums, len(nums))

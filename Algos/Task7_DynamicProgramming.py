@@ -6,12 +6,7 @@
 编程实现查找两个字符串的最长公共子序列
 编程实现一个数据序列的最长递增子序列
 
-[Practice]
-1.1维DP问题：
-    53. Maximum Subarray [Easy]
-    70.Climbing Stairs [Easy]
-        爬楼梯变形：给定n,找到不同将n写成1,3,4相加的问题（顺序matters）
-                或：仍然是爬楼梯，一次可以爬1步，3步或者4步
+
 
 
 
@@ -25,19 +20,45 @@ Note:
 
 '''
 1. 0-1背包问题
-假设我们有n件物品，分别编号为1, 2...n。
+假设我们有n件物品，分别编号为0, 2...n-1,每个只有1件。
 其中编号为i的物品价值为value[i]，它的重量为weight[i]。
 为了简化问题，假定价值和重量都是整数值。
 现在，假设我们有一个背包，它能够承载的重量是capacity。
 现在，我们希望往包里装这些物品，使得包里装的物品价值最大化，那么我们该如何来选择装的东西呢？
 
-[思路]
-1.首先我们先构建一个表格dp[i][j]，横轴为背包的容纳重量（从1到背包的实际最大容纳），纵轴为各个可选择的物品。
-而表格中的每个单元格表示的是使用i与前的物品、且保证总重量不大于j情况下背包能容纳物品的最大价值。
-2.尝试填充完毕后，我们可以得到一个结论：
-在i行j列的最大值可以说是（i-1行[即不取i物品]j列的值) 和 (i物品的价值 + i-1行j-i物品价值列的值[即取了i物品的价值])，
-写成状态转移方程即为：`dp[i][j] = max{dp[i-1][j], dp[i-1][j-value[i]] + value[i]}
+[思路]:
+1.首先我们先构建一个表格dp[i][j]，横轴为各个可选择的物品，纵轴为背包的容纳重量（从1到背包的实际最大容纳）。
+dp[i][j]表示前i个物品放入容量为j的背包中可以获得的最大价值。
+2.状态转移方程为：
+dp[i][j] = max{dp[i-1][j], dp[i-1][j-weight[i]] + value[i]}
+即，“将前i件物品放入容量为j的背包中”这个子问题，若只考虑第i件物品的策略（放或者不放），
+则可转化为一个只牵扯前i-1件物品的问题：
+1.若不放当前的第i件物品，则问题转化为“前i-1件物品放入容量为j的背包中”，价值为dp[i-1][j]；
+2.若放当前的第i件物品，则问题转化为“先将前i-1件物品放入剩下容量为j-weight[i-1]的背包中，再放入当前第i件物品”，
+价值为dp[i-1][j-weight[i]] + value[i]。
 
+[优化空间复杂度]：
+以上方法的时间和空间复杂度都为O(n*capacity),其中时间复杂度基本已经不能再优化了，
+但空间复杂度却可以优化到O(capacity)。
+
+因为dp[i][j]只和上一层的两个状态有关，所以可以将状态转化为一维数组：
+dp[j] = max(dp[j],dp[j-weight[i]] + value[i])；
+即要推dp[j],必须保证dp[j]是从dp[j-weight[i]]推出来的。
+如果j是顺序递增的，则dp[i][j]是由dp[i][j-weight[i]]推出来的，并非由原来的dp[i-1][j-weight[i]]推导得到的。
+E.g.
+开始循环前，即背包为空时，dp[0]到最大容量dp[5]的值都为0.
+开始循环后，我们需要比较dp[j]（即循环前的值）和dp[j-weight[i]] + value[i]；
+因为是顺序循环，j-weight[i] < j, 因此dp[j-weight[i]]会成为前面才刚刚被赋值过得值，
+例如当i = 0，
+从j=1(至少要让背包容量大于等于物品重量，不然为负没有意义)开始循环，dp[1] = max(dp[1],dp[1-1]+1500) = max(0,1500) = 1500，
+（即dp[0][1] = 1500，即背包容量为1时刚好可以放第0件物品，所获得的最大价值为该物品的价值1500.）
+然后dp[2] = max(dp[2], dp[2-1] + 1500) = max(0, dp[1] + 1500) = 1500 + 1500 = 3000,
+注意！！！
+这个时候的dp[j-weight[i]]就成了dp[1],而这个dp[1]是我们刚才才更新的值，是当前的dp[i],并不是由dp[i-1]得到的，
+而且此时我们明明只是想把第一个物品（i=0）放进容量为2的背包里，得到的最大价值只是第一个物品的价值，即1500而已，
+又怎么可能是3000？所以由此可知0-1背包问题中j不可顺序循环，而是逆序。
+
+https://blog.csdn.net/xiajiawei0206/article/details/19933781
 '''
 # n个物体的重量(w[0]无用)
 weight = [1, 4, 3, 1]
@@ -70,59 +91,3 @@ def bag_dynamic(weight, value, capacity, x):
             j = j - weight[i]
 
     return dp[n][capacity]
-
-
-
-'''
-53. Maximum Subarray [Easy]
-Method1: DP with O(n) time and O(n) space
-
-dp[i]表示以a[i]为结束的子序列的最大和
-前面的a[i-1]结束的某个子序列已经取得最大和,如果和是正的,那么继续累加下去才有意义,
-否则应该停止累积,从下1个元素重新计算子序列.
-
-step 0 : dp[0] = nums[0]
-step i : dp[i] = dp[i-1] + nums[i] if dp[i-1] > 0 else nums[i]
-
-e.g.
-input nums: [-2, 1, -3, 4, -1, 2, 1, -5, 4]
-final dp:   [-2, 1, -2, 4,  3, 5, 6,  1, 5]
-'''
-class Solution:
-    def maxSubArray(self, nums: List[int]) -> int:
-        dp = nums.copy()
-        for i in range(1, len(nums)):
-            if dp[i-1] > 0:
-                dp[i] = dp[i-1] + nums[i]
-        return max(dp)
-
-
-
-'''
-70.Climbing Stairs [Easy]
-DP (Bottom Up)
-Time: O(n), Space: O(n)
-'''
-class Solution:
-    def climbStairs(self, n: int) -> int:
-        if n < 2: return n
-        dp = [0]*n
-        dp[0], dp[1] = 1, 2
-        for i in range(2, n):
-            dp[i] = dp[i-1] + dp[i-2]
-        return dp[n-1]
-
-'''
-爬楼梯变形：给定n,找到不同将n写成1,3,4相加的问题（顺序matters）
-  或理解为：仍然是爬楼梯，一次可以爬1步，3步或者4步
-[分析]
-关键还是找到公式dp[i] = dp[i-1] + dp[i-3] + dp[i-4]，
-其实可以想成第一步是1有多少种选择，加上第一步是3的选择数，再加第一步是4的可能组合。
-'''
-def climb_stairs(n):
-    dp = [1, 1, 2, 4]
-    if n > 4:
-        dp += [0]*(n-4)
-    for i in range(4, n):
-        dp[i] = dp[i-1] + dp[i-3] + dp[i-4]
-    return dp[n-1]
