@@ -59,35 +59,95 @@ E.g.
 又怎么可能是3000？所以由此可知0-1背包问题中j不可顺序循环，而是逆序。
 
 https://blog.csdn.net/xiajiawei0206/article/details/19933781
+
 '''
-# n个物体的重量(w[0]无用)
-weight = [1, 4, 3, 1]
-# n个物体的价值(p[0]无用)
-value = [1500, 3000, 2000, 2000]
-# 计算n的个数
-n = len(weight) - 1
-# 背包的载重量
-capacity = 5
-# 装入背包的物体的索引
-x = []
+#0-1 背包问题
+def knapsack1(weight, value, capacity):
+    '''
 
-def bag_dynamic(weight, value, capacity, x):
+    >>> knapsack1([], [], 10)
+    0
+    >>> knapsack1([3], [10], 0)
+    0
+    >>> knapsack1([4], [15], 4)
+    15
+    >>> knapsack1([4], [15], 10)
+    15
+    >>> knapsack1([4], [15], 3)
+    0
+    >>> weight = [1, 2, 3, 8, 7, 4]
+    >>> value = [20, 5, 10, 40, 15, 25]
+    >>> capacity = 10
+    >>> knapsack1(weight, value, capacity)
+    60
+    >>> weight = [10, 20, 30]
+    >>> value = [60, 100, 120]
+    >>> capacity = 50
+    >>> knapsack1(weight, value, capacity)
+    220
+
+    '''
+
+    #winpty python -m doctest knapsack_problem_0_1.py
     n = len(weight)
-    weight.insert(0, 0)
-    value.insert(0, 0)
+    if n < 1 or capacity < 1: return 0
+    dp = [0]*(capacity + 1)
+    for item in range(n):
+        for j in range(capacity, weight[item]-1, -1):
+            dp[j] = max(dp[j], dp[j - weight[item]] + value[item])
+    return dp[capacity]
 
-    dp = [[0 for _ in range(capacity + 1)] for _ in range(n + 1)]
 
-    for i in range(1, n + 1):
-        for j in range(1, capacity + 1):
-            if j >= weight[i]:
-                dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i])
-            else:
-                dp[i][j] = dp[i - 1][j]
-    j = capacity
-    for i in range(n, 0, -1):
-        if dp[i][j] > dp[i - 1][j]:
-            x.append(i)
-            j = j - weight[i]
+'''
+如果改成硬币找零问题：01硬币找零问题（01背包）
+给定不同面额的硬币 coins 和总金额 m。每个硬币最多选择一次。
+计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
 
-    return dp[n][capacity]
+同理，dp[i][j]表示选取当前第i个硬币能凑成总金额为j时最少的硬币个数，
+即不拿当前第i个硬币时只用之前的硬币可以凑成j块钱所需最少硬币个数dp[i-1][j]，
+与拿当前第i个硬币加上拿之前的硬币凑成j-Coins[i]块钱的硬币数量之和dp[i-1][j-coins[i]] + 1 的最小值。
+即写成状态转移方程如下：
+dp[i][j] = min(dp[i-1][j], dp[i-1][j-coins[i]] + 1)
+
+同样，我们来优化空间复杂度，依然必须从最大总金额amount开始逆序枚举（枚举到当前硬币i的比值，不然j-coins[i]为负没有意义）。
+dp[j] = min(dp[j], dp[j-coins[i]] + 1)
+因为这道题是求最少硬币个数，在状态转移方程中用的是min()，所以初始化dp矩阵时给每个值都设为最大值float('inf'),
+边界情况为dp[0] = 0, 表示凑出金额为0的最小个数是0个。(但是若本身输入amount为0，则没有硬币组合，返回-1)
+最后检查dp[amount], 如果值为'inf', 则说明找不到硬币组合，输出-1，反之才输出相应硬币组合的个数。
+
+[注意]：其实在主循环循环到最后一个硬币时的从amount开始的内循环的第一步就可以结束了，因为我们只需要dp[amount]，
+但是接着循环的话可以更新其他amount的硬币组合，毕竟多考虑了一个硬币的情况。
+
+'''
+#0-1 硬币找零问题
+def coinChange1(coins, amount):
+    '''
+    >>> coinChange1([2], 1)
+    -1
+    >>> coins = [2, 3, 5]
+    >>> coinChange1(coins, 10)
+    3
+    >>> coinChange1(coins, 11)
+    -1
+    >>> coinChange1(coins, 0)
+    -1
+    >>> coins = [2, 1, 2, 3, 5]
+    >>> coinChange1(coins, 10)
+    3
+    >>> coinChange1(coins, 11)
+    4
+    >>> coinChange1(coins, 5)
+    1
+    >>> coinChange1(coins, 6)
+    2
+    '''
+
+    n = len(coins)
+    if n < 1 or amount < 1: return -1
+    dp = [float('inf')] * (amount + 1)
+    dp[0] = 0
+    for coin in coins:
+        for j in range(amount, coin-1, -1):
+            dp[j] = min(dp[j], dp[j-coin] + 1)
+    print(dp)
+    return dp[amount] if dp[amount] != float('inf') else -1
