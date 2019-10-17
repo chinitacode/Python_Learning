@@ -1,65 +1,26 @@
-
-'''
-416. Partition Equal Subset Sum [Medium]
-
-问题可以看做一个背包大小为Sum//2的0-1背包问题。
-
-dp[i][j]表示用前i个num可以凑齐j的组合方式个数：
-dp[i][j] = dp[i-1][j] + dp[i-1][j - nums[i]]
-
-可以优化空间复杂度为一维数列（逆序）：
-dp[j] = dp[j] + dp[j-nums[i]]
-
-使dp[0] = 1,即刚好当前num就可以凑齐j的组合个数为1；
-最后返回True如果dp[Sum//2]不为0，且为2的倍数，也就是说有2的整数倍种方式凑齐Sum//2。
-
-Time: O(N + N*Sum//2) = O(N*Sum//2), N为nums的元素个数，Sum为nums的元素之和。
-Space: O(Sum//2)
-Runtime: 1040 ms, faster than 35.83% of Python3 online submissions for Partition Equal Subset Sum.
-Memory Usage: 14.1 MB, less than 13.64% of Python3 online submissions for Partition Equal Subset Sum.
-'''
-class Solution:
-    def canPartition(self, nums: List[int]) -> bool:
-        Sum = sum(nums)
-        if Sum % 2: return False
-        cap = Sum // 2
-        dp = [0] * (cap + 1)
-        dp[0] = 1
-        for num in nums:
-            for j in range(cap, num -1, -1):
-                dp[j] = dp[j] + dp[j-num]
-        return True if (dp[cap] != 0 and dp[cap]%2 == 0) else False
-
-
-'''
-494. Target Sum [Medium]
-[Method 1]: DP
-该问题可以转换为 416.Partition Equal Subset Sum 问题，从而使用 0-1 背包的方法来求解。
-可以将这组数看成两部分，P 和 N，其中 P 使用正号，N 使用负号，有以下推导：
-                  sum(P) - sum(N) = target
-sum(P) + sum(N) + sum(P) - sum(N) = target + sum(P) + sum(N)
-                       2 * sum(P) = target + sum(nums)
-因此只要找到一个子集，令它们都取正号，并且和等于 (target + sum(nums))//2，就证明存在解。
-
-[Time]: O(n + n*cap) = O(n*cap), N为nums的元素个数，cap为(S+Sum) // 2；
-[Space]: O(cap+1)
-Runtime: 76 ms, faster than 98.69% of Python3 online submissions for Target Sum.
-Memory Usage: 13.8 MB, less than 58.33% of Python3 online submissions for Target Sum.
-'''
-class Solution:
-    def findTargetSumWays(self, nums: List[int], S: int) -> int:
-        Sum = sum(nums)
-        if S > Sum or (S+Sum) % 2: return 0
-        cap = (S+Sum) // 2
-        dp = [0] * (cap+1)
-        dp[0] = 1
-        for num in nums:
-            for j in range(cap, num-1, -1):
-                dp[j] = dp[j] + dp[j-num]
-        return dp[cap]
-
 '''
 474. Ones and Zeroes [Medium]
+For now, suppose you are a dominator of m 0s and n 1s respectively.
+On the other hand, there is an array with strings consisting of only 0s and 1s.
+Now your task is to find the maximum number of strings that you can form with given m 0s and n 1s.
+Each 0 and 1 can be used at most once.
+
+Note:
+The given numbers of 0s and 1s will both not exceed 100
+The size of given string array won't exceed 600.
+
+Example 1:
+Input: Array = {"10", "0001", "111001", "1", "0"}, m = 5, n = 3
+Output: 4
+Explanation: This are totally 4 strings can be formed by the using of 5 0s and 3 1s,
+which are “10,”0001”,”1”,”0”
+
+Example 2:
+Input: Array = {"10", "0", "1"}, m = 1, n = 1
+Output: 2
+
+Explanation: You could form "10", but then you'd have nothing left. Better form "0" and "1".
+
 [题目大意]：
 我们现在从数组中每个字符串都有一些0和1，问给了m个0，n个1，从数组中取出最多的字符串，这些字符串中1和0的出现次数之和不超过m，n.
 
