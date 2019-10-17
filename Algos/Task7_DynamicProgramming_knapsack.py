@@ -381,29 +381,156 @@ class Solution:
                 dp[i] = dp[i] + dp[i-coin]
         return dp[amount]
 
+'''
+3.多重背包问题 Multi-Knapsack Problem (MKP)
+
+[题目]：
+有N种物品和一个容量为V的背包。第i种物品最多有n[i]件可用，每件的重量是w[i]，价值是v[i]。
+求解将哪些物品装入背包可使这些物品的费用总和不超过背包容量，且价值总和最大。
+
+[基本算法]：
+这题目和全然背包问题非常类似。
+主要的方程仅仅需将全然背包问题的方程稍微一改就可以，由于对于第i种物品有n[i]+1种策略：
+取0件，取1件……取n[i]件。
+令dp[i][j]表示前i种物品恰放入一个容量为j的背包的最大权值，则有状态转移方程：
+
+dp[i][j] = max{dp[i - 1][j - k*w[i]] + k*v[i] | 0 <= k <= n[i]}。
+
+复杂度是O(V*Σn[i])。
+
+[转化为01背包问题]：
+还有一种好想好写的基本方法是转化为01背包求解：
+把第i种物品换成n[i]件01背包中的物品，则得到了物品数为Σn[i]的01背包问题，直接求解，复杂度仍然是O(V*Σn[i])。
+
+可是我们期望将它转化为01背包问题之后可以像全然背包一样减少复杂度。
+仍然考虑二进制的思想，我们考虑把第i种物品换成若干件物品，
+使得原问题中第i种物品可取的每种策略——取0..n[i]件——均能等价于取若干件代换以后的物品。
+另外，取超过n[i]件的策略必不能出现。
+
+多重背包转换成 01 背包问题就是多了个初始化，把它的件数C 用二进制分解成若干个件数的集合，
+这里面数字可以组合成任意小于等于C的件数，而且不会重复，之所以叫二进制分解，是因为这样分解可以用数字的二进制形式来解释：
+    7的二进制 7 = 111 它可以分解成 001 010 100 这三个数可以组合成任意小于等于7的数；
+    15 = 1111 可分解成 0001 0010 0100 1000 四个数字
+    13 = 1101 则分解为 0001 0010 0100 0110 前三个数字可以组合成7以内任意一个数，
+即1、2、4可以组合为1——7内所有的数，加上 0110 = 6，可以组合成任意一个大于6小于等于13的数，比如12，可以让前面贡献6且后面也贡献6就行了。
+虽然有重复但总是能把 13 以内所有的数都考虑到了，基于这种思想去把多件物品转换为，多种一件物品，就可用01背包求解了。
+
+即，将第i种物品分成若干件物品，当中每件物品有一个系数，这件物品的费用和价值均是原来的费用和价值乘以这个系数。
+使这些系数分别为 1,2,4,...,2^(k-1),n[i]-2^k+1，且k是满足n[i]-2^k+1>0的最大整数。
+比如，假设n[i]为13，就将这样的 物品分成系数分别为1,2,4,6的四件物品。
+
+分成的这几件物品的系数和为n[i]，表明不可能取多于n[i]件的第i种物品。
+另外这样的方法也能保证对于0..n[i]间的每个整数，均能够用若干个系数的和表示，
+这个证明能够分0..2^k-1和2^k..n[i]两段来分别讨论得出，并不难，希望你自己思考尝试一下。
+
+这样就将第i种物品分成了O(log n[i])种物品，将原问题转化为了复杂度为<math>O(V*Σlog n[i])的01背包问题，是非常大的改进。
+
+以下给出O(log amount)时间处理一件多重背包中物品的过程，当中amount表示物品的数量：
+
+procedure MultiplePack(cost,weight,amount)
+    if cost*amount>=V
+        CompletePack(cost,weight)
+        return
+    integer k=1
+    while k<amount
+        ZeroOnePack(k*cost,k*weight)
+        amount=amount-k
+        k=k*2
+    ZeroOnePack(amount*cost,amount*weight)
+
+'''
+weight = [3,2,6,7,1,4,9,5]
+value = [6,3,5,8,3,1,6,9]
+N = [3,5,1,9,3,5,6,8]#每种物品的个数
+target = 20 #The capacity of the knapsack
+DP = [0] * (target+1)
+n = len(weight)
+
+def UnboundedKnapsack(weight,value):
+    for j in range(weight,target+1):
+        DP[j] = max(DP[j],DP[j-weight] + value)
+
+def OneZeroKnapsack(weight,value):
+    for j in range(target, weight-1, -1):
+        DP[j] = max(DP[j],DP[j-weight] + value)
+
+def MultiKnapsack(weight,value,count):
+        if (weight * count) >= target:#当该种物品的个数乘以体积大于背包容量，视为有无限个即完全背包
+            UnboundedKnapsack(weight,value)
+            return
+        temp_count = 1  #以上情况不满足，转化为以下情况，具体参考《背包九讲》多重背包的时间优化
+        while temp_count < count:
+            OneZeroKnapsack(temp_count*weight,temp_count*value)
+            count = count - temp_count
+            temp_count = temp_count * 2  #转化为1，2，4
+        OneZeroKnapsack(count*weight,count*value) #9个中剩下两个
+
+for i in range(n):
+    MultiKnapsack(weight[i],value[i],N[i])
+print(DP[target])
+
 
 '''
 三、多重硬币找零问题（多重背包）
-给定不同面额的硬币 coins 和总金额 m。每个硬币选择的次数有限制为 s。计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+给定不同面额的硬币 coins 和总金额 m。每个硬币选择的次数有限制为s。
+计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
 
-状态表示
-
+[状态表示]
 这里和完全硬币问题的的初始状态表态表示很相似。
-考第i种硬币，我们可以不拿，或者拿1...k个，直到拿到个数的限制。
-f[i][j] = min(f[i-1]f[j], f[i-1][j-c]+1, f[i-1][j-2*c]+2, ..., f[i-1][j-k*c]+k)
+对于第i种硬币，我们可以不拿，或者拿1...k个，直到拿到个数的限制。
+
+dp[i][j] = min(dp[i-1][j], dp[i-1][j-c]+1, dp[i-1][j-2*c]+2, ..., dp[i-1][j-k*c]+k)
+
 所以在01问题的代码的基础上添加一层枚举硬币个数的循环即可
-
-这里可以使用二进制优化，转化为01背包问题求解。这里不扩展了。
-
-def func_3(coins, m, s):
-    f = [float('inf')] * (m + 1)
-    f[0] = 0
-    for i in range(len(coins)):
-        for j in range(m, coins[i]-1, -1):
-            for k in range(1, s[i]+1):  # 枚举每个硬币的个数 [1, s[i]]
-                if j >= k*coins[i]:  # 确保不超过金额 j
-                    f[j] = min(f[j], f[j - k*coins[i]] + k)
-    print(f)
-    return -1 if f[m] > m else f[m]
-
+这里可以使用二进制优化，转化为01背包问题求解。
 '''
+coins1 = [2, 5, 3]
+N1 = [5, 5, 5]
+m1 = 12
+
+coins2 = [5, 3, 2]
+N2 = [1, 5, 5]
+m2 = 13
+#用0-1背包求解
+def coin_change1(coins, m, N):
+    n = len(coins)
+    dp = [float('inf')] * (m + 1)
+    dp[0] = 0
+    for i in range(n):
+        for j in range(m, coins[i]-1, -1):
+            for k in range(1, N[i] + 1):
+                if k*coins[i] <= j:
+                    dp[j] = min(dp[j], dp[j - k*coins[i]] + k)
+    print(dp)
+    return -1 if dp[m] == float('inf') else dp[m]
+
+#print(coin_change1(coins1, m1, N1))
+print(coin_change1(coins2, m2, N2))
+
+#多重背包
+def coin_change2(coins, m, N):
+    n = len(coins)
+    dp = [float('inf')] * (m + 1)
+    dp[0] = 0
+    def unbounded(coin, k):
+        for j in range(coin, m+1):
+            dp[j] = min(dp[j], dp[j-coin] + k)
+    def zeroOne(coin, k):
+        for j in range(m, coin-1, -1):
+            dp[j] = min(dp[j], dp[j-coin] + k)
+    def multi(coin, count):
+        if count*coin > m:
+            unbounded(coin, 1)
+            return
+        k = 1
+        while k < count:
+            zeroOne(k*coin, k)
+            count = count - k
+            k = k*2
+        zeroOne(count*coin, count)
+    for i in range(n):
+        multi(coins[i], N[i])
+    print(dp)
+    return -1 if dp[m] == float('inf') else dp[m]
+
+print(coin_change2(coins2, m2, N2))
