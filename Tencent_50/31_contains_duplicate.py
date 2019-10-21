@@ -24,12 +24,12 @@ O(n)
 Runtime: 136 ms, faster than 93.10% of Python3 online submissions for Contains Duplicate.
 Memory Usage: 21 MB, less than 7.55% of Python3 online submissions for Contains Duplicate.
 '''
-from collections import Counter 
+from collections import Counter
 class Solution:
     def containsDuplicate(self, nums: List[int]) -> bool:
         dic = Counter(nums)
         return len(dic) != len(nums)
-        
+
 '''
 [method2]using set
 
