@@ -386,3 +386,385 @@ if __name__ == '__main__':
     graph = graphFromEdgelist(E,True)
     for k in graph.getEdges():
         print(k)
+
+'''
+#Or:
+
+class GraphAL(Graph):      #继承于Graph
+    def __init__(self,mat=[],unconn=0):
+        vnum = len(mat)
+        for x in mat:
+            if len(x) !=vnum:
+                raise ValueError("Argument for 'Graph'.")
+        self._mat = [Graph._out_edges(mat[i],unconn) for i in range(vnum)]
+        self._vnum = vnum
+        self._unconn = unconn
+
+    def add_edge(self,vi,vj,val = 1):
+        if self._vnum == 0:
+            raise GraphError('Cannot add edge to empty graph.')
+        if self._invalid(vi) or self._invalid(vj):
+            raise GraphError(str(vi) + ' or' + str(vj) + ' is not valid vertex.')
+
+        row = self._mat[vi]
+        i = 0
+        while i < len(row):
+            if row[i][0] == vj:
+                self._mat[vi][i] = (vj,val)
+                return
+            if row[i][0] > vj:
+                break
+            i += 1
+        self._mat[vi].insert(i,(vj,val))
+
+    def get_edge(self,vi,vj):
+        if self._invalid(vi) or self._invalid(vj):
+            raise GraphError(str(vi) + ' or' + str(vj) + ' is not valid vertex.')
+        for i,val in self._mat[vi]:
+            if i == vj:
+                return val
+        return self._unconn
+
+    def out_edges(self,vi):
+        if self._invalid(vi):
+            raise GraphError(str(vi) + ' is not valid vertex.')
+
+        return self._mat[vi]
+
+'''
+
+'''
+DFS(Depth First Search)深度优先搜索
+目标：遍历一个图
+想法：模仿迷宫探索
+Maze Graph:
+-Vertex = intersection.
+-Edge = passage.
+
+问题：从v出发，是否存在一条路能到达u。
+DFS(to visit a vertex)
+Mark v as visited.
+Recursively visit all unmarked vertices w adjacent to v.（递归调用所有neighbor）
+
+-如何跟踪下一步搜索的位置？
+· Stack:列表中只能从一端添加和移除：
+ · push：添加
+ · pop：删除
+
+-如何跟踪访问过的内容？
+·HashSet:常量添加，删除和搜索
+
+-如何跟踪从开始到目标的路径？
+·HashMap：将每个节点链接到发现它的节点
+
+[Recursive DFS]:
+DFS(G, S, D, visited, parents): #G为图,S为开始点，D为终点, 找是否有路从S到D; visited为HashSet,parents为HashMap
+if S == D: return
+for each of S's neighbors, n, not in visited set :
+    add n to visited set
+    add S as n's parent in parents map
+    DFS(n, D, visited, parents)
+'''
+def dfs(G, S, D, visited, parent):
+    if S == D:
+        print('Reaching Destination!')
+        return
+    visited.add(S)
+    print('Visiting: ', S)
+    for n in G.getVertex(S).getConnections():
+        id_n = n.getVertexID()
+        if id_n not in visited:
+            visited.add(id_n)
+            print('Traversing to: ', id_n)
+            parent[id_n] = S
+            dfs(G, id_n, D, visited, parent)
+
+#Testing:
+if __name__ == '__main__':
+    visited = set()
+    parent = {}
+    dfs(G,'a','e',visited,parent)
+    print(parent)
+    for node in parent:
+        print('traversal: ', parent[node], ' to: ',node)
+        if node == 'e': break
+'''
+#Testing results:
+Visiting:  a
+Traversing to:  b
+Visiting:  b
+Traversing to:  d
+Visiting:  d
+Traversing to:  e
+Reaching Destination!
+Traversing to:  c
+Visiting:  c
+Traversing to:  f
+Visiting:  f
+{'b': 'a', 'd': 'b', 'e': 'd', 'c': 'a', 'f': 'a'}
+traversal:  a  to:  b
+traversal:  b  to:  d
+traversal:  d  to:  e
+'''
+#Traversing from currentVert:
+def dfs(G, currentVert, visited):
+    visited[currentVert] = True  # mark the visited node
+    print("traversal: " + currentVert.getVertexID())
+    for nbr in currentVert.getConnections():  # take a neighbouring node
+        if nbr not in visited:  # condition to check whether the neighbour node is already visited
+            dfs(G, nbr, visited)  # recursively traverse the neighbouring node
+    return
+
+#Traversing the whole graph:
+def DFSTraversal(G):
+    visited = {}  # Dictionary to mark the visited nodes
+    for currentVert in G:  # G contains vertex objects (as defined by its __iter__ method)
+        if currentVert not in visited:  # Start traversing from the root node only if its not visited
+            dfs(G, currentVert, visited)  # For a connected graph this is called only onc
+
+if __name__ == '__main__':
+    DFSTraversal(G)
+'''
+#Testing results:
+traversal: a
+traversal: b
+traversal: d
+traversal: e
+traversal: c
+traversal: f
+'''
+if __name__ == '__main__':
+    #If traversing starts from 'e':
+    visited = {}
+    v = G.getVertex('e')
+    dfs(G, v, visited)
+
+'''
+#Testing results:
+traversal: e
+traversal: a
+traversal: b
+traversal: d
+traversal: c
+traversal: f
+'''
+
+'''
+[Iterative DFS]:
+DFS(G, S, D):
+    Initialize: stack, visited HashSet, parent HashMap
+    Push S onto the stack and add to visited
+    while stack is not empty:
+        pop node curr from top of stack
+        if curr == D: return parent map
+        for each of curr's neighbors, n, not in visited set:
+            add n to visited set
+            add curr as n's parent in parent map
+            push n onto the stack
+        // if we get here then there's no path
+'''
+def dfsIter(G,S,D):
+    stack = []
+    visited = set()
+    parent = {}
+    stack.append(S)
+    while stack:
+        curr = stack.pop()
+        print('Visiting: ', curr.getVertexID())
+        if curr.getVertexID() == D.getVertexID():
+            return parent
+        nbrs = G.getNeighbors(curr.getVertexID())
+        for n in nbrs:
+            id = n.getVertexID()
+            visited.add(id)
+            parent[id] = curr.getVertexID()  #为了跟踪parent,得先记录parent再把vertex加入stack
+            stack.append(n)
+    return None
+
+if __name__ == '__main__':
+    start = G.getVertex('a')
+    dest = G.getVertex('e')
+    parent = dfsIterative(G, start, dest)
+    print(parent)
+
+'''
+visiting  a
+visiting  f
+visiting  c
+visiting  e
+{'b': 'a', 'c': 'a', 'f': 'a', 'd': 'c', 'e': 'c'}
+'''
+
+
+'''
+简化输入和程序：
+[递归版]：
+'''
+#邻接列表图
+G={
+    'a':{'b','f'},
+    'b':{'c','d','f'},
+    'c':{'d'},
+    'd':{'e','f'},
+    'e':{'f'},
+    'f':{}
+}
+#从顶点s开始遍历整个图：
+def DFS(G,s,visited = set(), path = []): #visited和path是全局变量，递归过程中需要随时修改
+    path.append(s)
+    visited.add(s)
+    for nbr in G[s]:
+        if nbr not in visited:
+            DFS(G,nbr,visited,path)
+    return path
+
+if __name__ == '__main__':
+    print(DFS(G,'a'))
+    #['a', 'b', 'f', 'd', 'e', 'c']
+
+#用HashMap来跟踪路径
+def dfsRecur(G,s,parent = {}):
+    if s not in parent:
+        parent[s] = None
+    for nbr in G[s]:
+        if nbr not in parent:
+            parent[nbr] = s
+            dfsRecur(G,nbr,parent)
+    return parent
+
+if __name__ == '__main__':
+    print(dfsRecur(G,'a'))
+    #{'a': None, 'b': 'a', 'f': 'b', 'd': 'b', 'e': 'd', 'c': 'b'}
+
+
+#看从起点s是否存在到达终点d的路径：
+def path_dfs(s,d):
+    parent = dfsRecur(G,s)
+    path = [d]
+    node = d
+    while parent[node] and parent[parent[node]]:
+        path.append(parent[node])
+        node = parent[node]
+    if parent[node] == s:
+        path.append(parent[node])
+        path.reverse()
+        return path
+    return None
+
+if __name__ == '__main__':
+    print(path_dfs('a','e'))
+    #['a', 'b', 'd', 'e']
+    print(path_dfs('e','f'))
+    #None
+
+'''
+[迭代版]：
+'''
+def DFSIter(G,s,visited = set(), path = []):
+    stack = [s]
+    while stack:
+        curr = stack.pop()
+        if curr not in visited:
+            path.append(curr)
+            visited.add(curr)
+            stack += G[curr]
+    return path
+
+if __name__ == '__main__':
+    print(DFSIter(G,'a'))
+    #['a', 'f', 'b', 'c', 'd', 'e']
+
+#用HashMap来跟踪路径
+def dfsIter(G,s):
+    path = []
+    parent = {s:None}
+    stack = [s]
+    while stack:
+        curr = stack.pop()
+        path.append(curr)
+        for nbr in G[curr]:
+            if nbr not in parent:
+                parent[nbr] = curr #没办法，这里记录的parent是按BFS来的，因为是按neighbor一层层地添加到parent里
+                stack.append(nbr)
+    return parent,path
+
+if __name__ == '__main__':
+    print(dfsIter(G,'a'))
+    #({'a': None, 'b': 'a', 'f': 'a', 'd': 'b', 'c': 'b', 'e': 'd'}, ['a', 'f', 'b', 'c', 'd', 'e'])
+'''
+BFS(Depth First Search)广度优先搜索
+广度优先搜索是按范围一圈一圈地扩大，就想警察抓小偷，不可能一开始就只奔东边一直深入查找抓犯人。
+因为stack这个数据结构先进后出(或后进先出)（LIFO）的性质，我们可以不停地加入新的邻居一直加到最底层；
+但对于BFS,我们需要先进先出，先把第一层的邻居搜索完，再搜索第二层的邻居......，所以我们需要队列这个数据结构。
+BFS只有迭代这一种实现方式。
+E.g. 对于图G：
+G={
+    'a':{'b','f'},
+    'b':{'c','d','f'},
+    'c':{'d'},
+    'd':{'e','f'},
+    'e':{'f'},
+    'f':{}
+}
+BFS先访问a节点的邻接节点b、f；再访问b的邻接节点c、d、f；接下来访问a的另一个邻接节点 f 的邻接节点……
+'''
+from collections import deque
+def BFS(G,s,visited = set(),path = []):
+    deq = deque()
+    deq.append(s)
+    while deq:
+        curr = deq.popleft()
+        if curr not in visited:
+            path.append(curr)
+            visited.add(curr)
+            deq += G[curr]
+    return path
+
+if __name__ == '__main__':
+    print(BFS(G,'a'))
+    #['a', 'f', 'b', 'c', 'd', 'e']
+
+from collections import deque
+
+#为记录每一个节点的父节点的字典
+def bfs(G,s):
+    parent = {s:None}
+    deq = deque()
+    deq.append(s)
+    while deq:
+        curr = deq.popleft()
+        for nbr in G[curr]:
+            if nbr not in parent:
+                parent[nbr] = curr
+                deq.append(nbr)
+    return parent
+
+if __name__ == '__main__':
+    print(bfs(G,'a'))
+    #{'a': None, 'f': 'a', 'b': 'a', 'c': 'b', 'd': 'b', 'e': 'd'}
+
+
+#获取a至e的路径
+def path(s,d):
+    parent = BFS(G,s)
+    print(parent)
+    if d not in parent: return None #对于倒着的有向图路径，终点肯定不存在于BFS的parent里，直接返回None即可
+    node = d
+    path = [node]
+    while parent[node] and parent[parent[node]]: #即有vertex通向node，就说明有路
+        path.append(parent[node])
+        node = parent[node]
+    if parent[node] == s:
+        path.append(parent[node])
+        path.reverse()
+        return path
+    return None
+
+
+if __name__ == '__main__':
+    print(path('a','e'))
+    #{'a': None, 'f': 'a', 'b': 'a', 'c': 'b', 'd': 'b', 'e': 'd'}
+    #['a', 'b', 'd', 'e']
+    print(path('c','a')) #对于倒着的有向图路径，终点肯定不存在于BFS的parent里，直接返回None即可
+    #{'c': None, 'd': 'c', 'e': 'd', 'f': 'd'}
+    #None
