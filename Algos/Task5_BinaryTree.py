@@ -3,7 +3,7 @@
 【二叉树】
 1.实现一个二叉查找树，并且支持插入、删除、查找操作
 2.实现查找二叉查找树中某个节点的后继、前驱节点
-3.实现二叉树前、中、后序以及按层遍历
+3.实现二叉树前、中、后序以及层次遍历
 4.并完成leetcode上的验证二叉搜索树(98)及二叉树层次遍历(102,107)！（选做）（保留往期第四天任务）
 ---------------------------------------------------------------------
 '''
@@ -573,15 +573,216 @@ class Solution(object):
 
 
 ---------------------------------------------------------------------
+102. Binary Tree Level Order Traversal
+Given a binary tree, return the level order traversal of its nodes' values.
+(ie, from left to right, level by level).
 
+For example:
+Given binary tree [3,9,20,null,null,15,7],
+    3
+   / \
+  9  20
+    /  \
+   15   7
+return its level order traversal as:
+[
+  [3],
+  [9,20],
+  [15,7]
+]
 
+[Method 1]: Using 2 stacks
+按层更新名为level的stack，
+对每一层的节点，先把节点的val加进这一层的list里面，
+再把其左右节点加进next_level的stack里，
+当把这一层的节点都遍历完时就用next_level来更新level，
+直到level为空。
+Runtime: 24 ms, faster than 51.43% of Python online submissions for Binary Tree Level Order Traversal.
+Memory Usage: 12.3 MB, less than 48.53% of Python online submissions for Binary Tree Level Order Traversal.
+'''
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if root is None: return []
+        res = []
+        level = []
+        level.append(root)
+        while level:
+            nodes = []
+            next_level = []
+            for node in level:
+                nodes.append(node.val)
+                if node.left:
+                    next_level.append(node.left)
+                if node.right:
+                    next_level.append(node.right)
+            res.append(nodes)
+            level = next_level
+        return res
 
 '''
+[Method 2]：BFS + queue
+queue的概念用deque来实现，popleft() 时间复杂为O(1)即可
+外围的While用来定义BFS的终止条件，所以我们最开始initialize queue的时候可以直接把root放进去
+在每层的时候，通过一个cur_level记录当前层的node.val，
+size用来记录queue的在增加子孙node之前大小，因为之后我们会实时更新queue的大小。
+当每次从queue中pop出来的节点，把它的左右子节点放进Queue以后，记得把节点本身的的value放进cur_level。
+for loop终止后，就可以把记录好的整层的数值，放入我们的return数组里。
+[Time]: O(N)
+[Space]: O(size of return array + size of queue) -> Worst Case O(2N)
+Runtime: 24 ms, faster than 51.43% of Python online submissions for Binary Tree Level Order Traversal.
+Memory Usage: 12.4 MB, less than 26.47% of Python online submissions for Binary Tree Level Order Traversal.
+'''
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
 
+from collections import deque
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if root is None: return []
+        queue, res = deque([root]), []
+        while queue:
+            #size是关键！用来记录每一层的节点个数！
+            size = len(queue)
+            nodes = []
+            for i in range(size):
+                node = queue.popleft()
+                nodes.append(node.val)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+            res.append(nodes)
+        return res
+
+'''
+107. Binary Tree Level Order Traversal II [Easy]
+Given a binary tree, return the bottom-up level order traversal of its nodes' values. (ie, from left to right, level by level from leaf to root).
+
+For example:
+Given binary tree [3,9,20,null,null,15,7],
+    3
+   / \
+  9  20
+    /  \
+   15   7
+return its bottom-up level order traversal as:
+[
+  [15,7],
+  [9,20],
+  [3]
+]
+
+
+[Method 1]: 按照之前的思路，最后做个reverse。
+Runtime: 24 ms, faster than 48.79% of Python online submissions for Binary Tree Level Order Traversal II.
+Memory Usage: 12.5 MB, less than 26.09% of Python online submissions for Binary Tree Level Order Traversal II.
+'''
+class Solution(object):
+    def levelOrderBottom(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if root is None:
+            return []
+        res = []
+        level = [root]
+        while level :
+            res.append([node.val for node in level])
+            next_level = []
+            for node in level:
+                if node.left:
+                    next_level.append(node.left)
+                if node.right:
+                    next_level.append(node.right)
+            level = next_level
+        return res[::-1]
+
+'''
+[Method 2]：
+按层遍历时，把新一层的节点插入到最前面。
+Runtime: 20 ms, faster than 79.16% of Python online submissions for Binary Tree Level Order Traversal II.
+Memory Usage: 12.3 MB, less than 56.52% of Python online submissions for Binary Tree Level Order Traversal II.
+'''
+class Solution(object):
+    def levelOrderBottom(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root: return []
+        level, res = [root], []
+        while level:
+            res.insert(0,[node.val for node in level]) #因为每一层的节点也要按照左右的顺序输出
+            next_level = []
+            for node in level:
+                next_level.extend([node.left, node.right])
+            level = [node for node in next_level if node]  #去除空节点
+        return res
+
+
+# dfs recursively
+def levelOrderBottom1(self, root):
+    res = []
+    self.dfs(root, 0, res)
+    return res
+
+def dfs(self, root, level, res):
+    if root:
+        if len(res) < level + 1:
+            res.insert(0, [])
+        res[-(level+1)].append(root.val)
+        self.dfs(root.left, level+1, res)
+        self.dfs(root.right, level+1, res)
+
+# dfs + stack
+def levelOrderBottom2(self, root):
+    stack = [(root, 0)]
+    res = []
+    while stack:
+        node, level = stack.pop()
+        if node:
+            if len(res) < level+1:
+                res.insert(0, [])
+            res[-(level+1)].append(node.val)
+            stack.append((node.right, level+1))
+            stack.append((node.left, level+1))
+    return res
+
+# bfs + queue
+def levelOrderBottom(self, root):
+    queue, res = collections.deque([(root, 0)]), []
+    while queue:
+        node, level = queue.popleft()
+        if node:
+            if len(res) < level+1:
+                res.insert(0, [])
+            res[-(level+1)].append(node.val)
+            queue.append((node.left, level+1))
+            queue.append((node.right, level+1))
+    return res
 
 '''
 98. Validate Binary Search Tree
-
 > 类型：DFS遍历
 > Time Complexity O(n)
 > Space Complexity O(h)
