@@ -6,7 +6,9 @@
 求一组动态数据集合的最大 Top K
 （选做）第三天堆排序学习（复习）
 
+[完美二叉树]：所有叶子节点都在同一层，毫无间隙地填充了H层。
 
+[满二叉树]：每个内部节点（非叶节点）都包含两个孩子。
 
 [完全二叉树]：
 ·二叉树(Binary Tree): 二叉树左右侧连接为空或者节点。
@@ -219,10 +221,348 @@ if __name__ == '__main__':
     test_minheap(5)
 
 
-
-
 '''
 [堆排序]：
 对于一个length为N的数列，我们先构建堆，需要O(N)的时间，然后把堆顶(最大值)一个个地pop到输出结果中，
 (delete操作是O(logN)的)，则总共需要O(NlogN)的时间复杂度，O(N)的空间(但也有In-place的解法)。
+
+[Python中的heapq模块]
+这个模块提供了的堆是一个最小堆，索引值从0开始。
+而很多教材中都使用最大堆作为教学的例子，因为其排序是稳定的，而最小堆排序是不稳定的。
+Python中创建一个堆可以直接使用list的创建方式heap = [], 或者使用heapify()函数将一个存在的列表转为堆。
+
+heapq是二叉堆，通常用普通列表实现，能在O(logN)时间内插入和获取最小的元素。
+这个模块提供了下面几种堆的操作：
+-heapq.heappush(heap, item)
+往堆中插入一个值，同时要保持为最小堆。
+
+-heapq.heappop(heap)
+返回堆中的最小值，并把它从堆中删除，同时保持为最小堆；如果堆为空，发生 IndexError。
+直接通过heap[0]可以获取最小值并不从堆中把它删除。
+
+-heapq.heappushpop(heap, item)
+向堆中插入值后再弹出堆中的最小值，这个函数的速度比直接使用heappush()后再heappop()的效率更加高。
+
+-heapq.heapreplace(heap, item)
+弹出和返回堆中的最小值再插入一个新的值。堆的大小没有改变。如果堆为空，产生 IndexError。
+这一个操作也比直接使用heappop()再heappush()的效率更加高，尤其适合使用在固定堆大小不变的情况。
+与上一个函数相比，这个函数返回的值可能要比将要插入到堆的值大。
+
+-heapq.heapify(x)
+将一个list转为最小堆，线性时间复杂度，O(n).
+
+'''
+from heapq import heappush,heappop
+heap = []
+data = [1,3,5,7,9,2,4,6,8,0]
+for item in data:
+    heappush(heap, item)
+print(heap) #[0, 1, 2, 6, 3, 5, 4, 7, 8, 9]
+
+#Heap Sort
+ordered = []
+while heap:
+    ordered.append(heappop(heap))
+print(ordered) #[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+#Or:
+import heapq
+data = [1,3,5,7,9,2,4,6,8,0]
+heapq.heapify(data)
+print(data) #[0, 1, 2, 6, 3, 5, 4, 7, 8, 9]
+
+'''
+[Extension]:
+-heapq.merge(*iterables) :
+Merge multiple sorted inputs into a single sorted output
+(for example, merge timestamped entries from multiple log files).
+Returns an iterator over the sorted values.
+
+Similar to sorted(itertools.chain(*iterables)) but returns an iterable,
+does not pull the data into memory all at once,
+and assumes that each of the input streams is already sorted (smallest to largest).
+
+E.G.
+from heapq import merge
+def mergeArray(arr1,arr2):
+    return list(merge(arr1, arr2))
+
+if __name__ == "__main__":
+    arr1 = [1,3,4,5]
+    arr2 = [2,4,6,8]
+    print mergeArray(arr1, arr2)
+Output:
+[1, 2, 3, 4, 4, 5, 6, 8]
+
+
+-heapq.nlargest(n, iterable[, key])
+Return a list with the n largest elements from the dataset defined by iterable.
+key, if provided, specifies a function of one argument that is used
+to extract a comparison key from each element in the iterable:
+key=str.lower Equivalent to: sorted(iterable, key=key, reverse=True)[:n]
+
+
+-heapq.nsmallest(n, iterable[, key])
+Return a list with the n smallest elements from the dataset defined by iterable.
+key, if provided, specifies a function of one argument
+that is used to extract a comparison key from each element in the iterable:
+key=str.lower Equivalent to: sorted(iterable, key=key)[:n]
+
+The latter two functions perform best for smaller values of n.
+For larger values, it is more efficient to use the sorted() function.
+Also, when n==1, it is more efficient to use the builtin min() and max() functions.
+'''
+import heapq
+li1 = [6,7,9,4,3,5,8,10,1]
+heapq.heapify(li1)
+print('The 3 largest numbers in the list are: ', heapq.nlargest(3,li1))
+#The 3 largest numbers in the list are: [10,9,8]
+
+print('The 3 smallest numbers in the list are: ', heapq.nsmallest(3,li1))
+#The 3 largest numbers in the list are: [1,3,4]
+'''
+[优先级队列(Priority Queue)]
+ 队列的特点是先进先出。通常都把队列比喻成排队买东西，大家都很守秩序，先排队的人就先买东西。
+ 但是优先队列有所不同，它不遵循先进先出的规则，而是根据队列中元素的优先权，优先权最大的先被取出。
+
+
+优先队列是一种用来维护一组元素构成的结合S的数据结构，其中每个元素都有一个关键字key，
+元素之间的比较都是通过key来比较的。优先队列包括最大优先队列和最小优先队列。
+优先队列的应用比较广泛，比如作业系统中的调度程序，当一个作业完成后，
+需要在所有等待调度的作业中选择一个优先级最高的作业来执行，并且也可以添加一个新的作业到作业的优先队列中。
+
+优先队列的实现中，我们可以选择堆数据结构，最大优先队列可以选用大堆，最小优先队列可以选用小堆来实现。
+
+特点：
+☺ 优先级队列是0个或多个元素的集合，每个元素都有一个优先权或值。
+☺当给每个元素分配一个数字来标记其优先级时，可设较小的数字具有较高的优先级，
+这样更方便地在一个集合中访问优先级最高的元素，并对其进行查找和删除操作。
+☺对优先级队列，执行的操作主要有：(1)查找，(2)插入，(3)删除。
+☺ 在最小优先级队列(min Priority Queue)中，查找操作用来搜索优先权最小的元素，删除操作用来删除该元素。
+☺在最大优先级队列(max Priority Queue)中，查找操作用来搜索优先权最大的元素，删除操作用来删除该元素。
+☺ 插入操作均只是简单地把一个新的元素加入到队列中。
+
+好处：
+·自动排序
+
+优先队列的基本操作
+q.size();//返回q里元素个数
+q.empty();//返回q是否为空，空则返回1，否则返回0
+q.push(k);//在q的末尾插入k
+q.pop();//删掉q的第一个元素
+q.top();//返回q的第一个元素
+q.back();//返回q的末尾元素
+
+
+1.heapq模块是在Python中不错的优先级队列实现。
+由于heapq在技术上只提供最小堆实现，因此必须添加额外步骤来确保排序稳定性，
+以此来获得“实际”的优先级队列中所含有的预期特性。
+
+'''
+import heapq
+q = []
+heapq.heappush(q, (2, 'code'))
+heapq.heappush(q, (1, 'eat'))
+heapq.heappush(q, (3, 'sleep'))
+print(q) #[(1, 'eat'), (2, 'code'), (3, 'sleep')]
+while q:
+    next_item = heapq.heappop(q)
+    print(next_item)
+# 结果：
+#   (1, 'eat')
+#   (2, 'code')
+#   (3, 'sleep')
+
+'''
+2.queue.PriorityQueue——Python 优先队列
+queue.PriorityQueue这个优先级队列的实现在内部使用了heapq，时间和空间复杂度与heapq相同。
+区别在于PriorityQueue是同步的，提供了锁语义来支持多个并发的生产者和消费者。
+在不同情况下，锁语义可能会带来帮助，也可能会导致不必要的开销。
+不管哪种情况，你都可能更喜欢PriorityQueue提供的基于类的接口，而不是使用heapq提供的基于函数的接口。
+
+>>> from queue import PriorityQueue
+>>> q = PriorityQueue()
+>>> q.put((2, 'code'))
+>>> q.put((1, 'eat'))
+>>> q.put((3, 'sleep'))
+>>> q
+<queue.PriorityQueue object at 0x02C2C6D0>
+>>> while not q.empty():
+	print(q.get())
+(1, 'eat')
+(2, 'code')
+(3, 'sleep')
+>>> q.empty()
+True
+>>> q.put((3, 'sleep'))
+>>> q[0]
+Traceback (most recent call last):
+  File "<pyshell#44>", line 1, in <module>
+    q[0]
+TypeError: 'PriorityQueue' object does not support indexing
+>>> q.queue
+[(3, 'sleep')]
+
+(1).queue.PriorityQueue的基本操作
+常用put()（入队列）与get()（出队列），queue（查看队列中的元素）。
+put方法要注意方入队列的是一个元组，不要忘记括号，默认情况下队列根据元组的第一个元素进行排序。越小的优先级越低。
+get方法是将优先级最低的一个元素出队列
+'''
+from queue import PriorityQueue as PQ
+pq = PQ()
+pq.put((2, 'a'))
+pq.put((1, 'b'))
+pq.queue # output: [(1, 'b'), (2, 'a')]
+pq.get() # output: (1, 'b')
+pq.queue # output: [(2, 'a')]
+
+'''
+(2).按(1)中的例子来说，我希望出队列的是a这个元素。那么该怎么做呢？这需要入队列时将数组取负号即可。
+'''
+from queue import PriorityQueue as PQ
+pq = PQ()
+pq.put((-2, 'a'))
+pq.put((-1, 'b'))
+pq.queue # output: [(-2, 'a'), (-1, 'b')]
+pq.get() # output: (-2, 'a')
+pq.queue # output: [(-1, 'b')]
+
+'''
+(3).入队列时可能会犯的错误
+我们自定义一个类A，将两个优先级相同的不同A的实例加入队列中。
+'''
+from queue import PriorityQueue as PQ
+pq = PQ()
+class A:
+    def __init__(self, val):
+        self.val = val
+pq.put((1, A(1)))
+pq.put((1, A(2))) # error:  '<' not supported between instances of 'A' and 'A
+
+'''
+报错的原因是A的实例是不可比较的，在python3中当优先级相同的情况下，将会比较元组的第二值。
+所以当你可能向元组中存入不可比较的值，或者当你希望通过入队的顺序控制出队的顺序，
+你需要为元组第二个位置增加一个辅助变量，通常为一个自增的变量。
+'''
+from queue import PriorityQueue as PQ
+pq = PQ()
+class A:
+    def __init__(self, val):
+        self.val = val
+index = 0
+pq.put((1, index, A(1)))
+index += 1
+pq.put((1, index, A(2)))
+#现在就不会报错了，而保证了入队的顺序与出队的顺序相同。
+
+'''
+#[queue.PriorityQueue的源码]
+'''
+class PriorityQueue(Queue):
+    '''Variant of Queue that retrieves open entries in priority order (lowest first).
+
+    Entries are typically tuples of the form:  (priority number, data).
+    '''
+
+    def _init(self, maxsize):
+        self.queue = []
+
+    def _qsize(self):
+        return len(self.queue)
+
+    def _put(self, item):
+        heappush(self.queue, item)
+
+    def _get(self):
+        return heappop(self.queue)
+
+'''
+[实现自己的优先级队列类]:
+'''
+#1.最小优先级队列(min Priority Queue)
+import heapq
+
+class MinPriorityQueue:
+
+    def __init__(self):
+        self._index = 0
+        self.queue = []
+
+    def push(self, priority, val):
+        heapq.heappush(self.queue, (priority, self._index, val))
+        self._index += 1
+
+    def pop(self):
+        return heapq.heappop(self.queue)[-1]
+'''
+#Testing results
+>>> minq = MinPriorityQueue()
+>>> minq.push(2,'prepare lunch ingredients')
+>>> minq.push(1,'do yoga')
+>>> minq.push(3,'bring breakfast')
+>>> for i in range(3):
+	print(minq.queue)
+	print(minq.pop())
+
+[(1, 1, 'do yoga'), (2, 0, 'prepare lunch ingredients'), (3, 2, 'bring breakfast')]
+do yoga
+[(2, 0, 'prepare lunch ingredients'), (3, 2, 'bring breakfast')]
+prepare lunch ingredients
+[(3, 2, 'bring breakfast')]
+bring breakfast
+'''
+
+#2.最大优先级队列(max Priority Queue)
+class MaxPriorityQueue(object):
+    def __init__(self):
+        self._queue = []        #创建一个空列表用于存放队列
+        self._index = 0        #指针用于记录push的次序
+
+    def push(self, item, priority):
+        """队列由（priority, index, item)形式的元祖构成"""
+        heapq.heappush(self._queue, (-priority, self._index, item))
+        self._index += 1
+
+    def pop(self):
+        return heapq.heappop(self._queue)[-1]    #返回拥有最高优先级的项
+
+class Item(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return 'Item: {!r}'.format(self.name)
+
+if __name__ == '__main__':
+    q = MaxPriorityQueue()
+    q.push(Item('foo'), 5)
+    q.push(Item('bar'), 1)
+    q.push(Item('spam'), 3)
+    q.push(Item('grok'), 1)
+    for i in range(4):
+        print(q._queue)
+        print(q.pop())
+
+'''
+[(-5, 0, Item: 'foo'), (-1, 1, Item: 'bar'), (-3, 2, Item: 'spam'), (-1, 3, Item: 'grok')]
+Item: 'foo'
+[(-3, 2, Item: 'spam'), (-1, 1, Item: 'bar'), (-1, 3, Item: 'grok')]
+Item: 'spam'
+[(-1, 1, Item: 'bar'), (-1, 3, Item: 'grok')]
+Item: 'bar'
+[(-1, 3, Item: 'grok')]
+Item: 'grok'
+'''
+
+'''
+[关键要点]
+Python提供了几种优先队列实现可以使用。
+queue.PriorityQueue是其中的首选，具有良好的面向对象的接口，从名称就能明白其用途。
+如果想避免queue.PriorityQueue的锁开销，那么建议直接使用heapq模块。
+'''
+
+
+
+'''
+
 '''
