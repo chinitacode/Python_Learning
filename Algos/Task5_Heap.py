@@ -2,9 +2,6 @@
 【堆】Heap/Priority Queue
 实现一个小顶堆、大顶堆、优先级队列
 实现堆排序
-利用优先级队列合并 K 个有序数组
-求一组动态数据集合的最大 Top K
-（选做）第三天堆排序学习（复习）
 
 [完美二叉树]：所有叶子节点都在同一层，毫无间隙地填充了H层。
 
@@ -320,6 +317,73 @@ print('The 3 largest numbers in the list are: ', heapq.nlargest(3,li1))
 
 print('The 3 smallest numbers in the list are: ', heapq.nsmallest(3,li1))
 #The 3 largest numbers in the list are: [1,3,4]
+
+
+#对于没有可比性的数据结构，如dictionary,可以传入lambda函数:
+portfolio = [
+    {'name': 'IBM', 'shares': 100, 'price': 91.1},
+    {'name': 'AAPL', 'shares': 50, 'price': 543.22},
+    {'name': 'FB', 'shares': 200, 'price': 21.09},
+    {'name': 'HPQ', 'shares': 35, 'price': 31.75},
+    {'name': 'YHOO', 'shares': 45, 'price': 16.35},
+    {'name': 'ACME', 'shares': 75, 'price': 115.65}
+]
+
+if __name__ == '__main__':
+    cheap = heapq.nsmallest(3, portfolio, key=lambda s: s['price'])
+    print(cheap)
+    #[{'name': 'YHOO', 'price': 16.35, 'shares': 45},
+    #{'name': 'FB', 'price': 21.09, 'shares': 200},
+    #{'name': 'HPQ', 'price': 31.75, 'shares': 35}]
+
+'''
+Class Objects
+Python isn't strongly typed, so we can save anything we like:
+just as we stored a tuple of (priority,thing) in previous section.
+We can also store class objects if we override cmp() method:
+# Override __lt__ in Python 3, __cmp__ only in Python 2
+'''
+import heapq
+class Skill(object):
+    def __init__(self, priority, description):
+        self.priority = priority
+        self.description = description
+        print('New Level:', description)
+        return
+    #def __cmp__(self, other):
+        #return cmp(self.priority, other.priority)
+    def __lt__(self, other):
+        return self.priority < other.priority
+    def __repr__(self):
+        return str(self.priority) + ": " + self.description
+
+
+if __name__ == '__main__':
+    s1 = Skill(5, 'Proficient')
+    s2 = Skill(10, 'Expert')
+    s3 = Skill(1, 'Novice')
+
+    l = [s1, s2, s3]
+
+    heapq.heapify(l)
+    print("The 3 largest numbers in list are : ",end="")
+    print(heapq.nlargest(3, l))
+
+    while l:
+        item = heappop(l)
+        print(item)
+
+    '''
+    ###Testing results###
+    New Level: Proficient
+    New Level: Expert
+    New Level: Novice
+    The 3 largest numbers in list are : [10: Expert, 5: Proficient, 1: Novice]
+    1: Novice
+    5: Proficient
+    10: Expert
+    '''
+
 '''
 [优先级队列(Priority Queue)]
  队列的特点是先进先出。通常都把队列比喻成排队买东西，大家都很守秩序，先排队的人就先买东西。
@@ -552,17 +616,10 @@ Item: 'spam'
 Item: 'bar'
 [(-1, 3, Item: 'grok')]
 Item: 'grok'
-'''
 
-'''
+
 [关键要点]
 Python提供了几种优先队列实现可以使用。
 queue.PriorityQueue是其中的首选，具有良好的面向对象的接口，从名称就能明白其用途。
 如果想避免queue.PriorityQueue的锁开销，那么建议直接使用heapq模块。
-'''
-
-
-
-'''
-
 '''
