@@ -12,6 +12,8 @@ Input: [1,2,3]
      2   3
 Output: 6
 
+
+
 Example 2:
 Input: [-10,9,20,null,null,15,7]
    -10
@@ -20,6 +22,17 @@ Input: [-10,9,20,null,null,15,7]
     /  \
    15   7
 Output: 42
+
+
+
+Example 3:
+Input: [-1,-2,-3]
+       1
+      / \
+     2   3
+Output: -1
+因为至少需要包含1个节点，所以这里只是舍弃为负的叶节点。
+
 
 Solution:
 Divide and Conquer + DFS Method with Helper Function updating a "global" maximum
