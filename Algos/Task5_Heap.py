@@ -81,9 +81,11 @@ class Array(object):
     def __len__(self):
         return self._size
 
+    # 清空数列（把数列里的值全部设置为None）
     def clear(self, value = None):
         for i in range(self._size):
             self._items[i] = value
+
     def __iter__(self):
         for item in self._items:
             yield item
@@ -190,17 +192,17 @@ class MinHeap(object):
 
     def _downheap(self, idx):
         left, right = 2*idx + 1, 2*idx + 2
-        Max = idx #记录父、左子、右子三个节点最大值的index
-        #如果存在左child并且其值大于父节点值
+        Min = idx #记录父、左子、右子三个节点最小值的index
+        #如果存在左child并且其值小于父节点值，则更新 Max的index
         '''*注!*：根据完全二叉树的特性，要么就左右child一起存在，要么就只存在左child！'''
-        if left < self._count and self._elements[left] < self._elements[Max]:
+        if left < self._count and self._elements[left] < self._elements[Min]:
             #如果存在右child并且其值大于左child
             if right < self._count and self._elements[left] > self._elements[right]:
-                Max = right
-            Max = left
-        if Max != idx:
-            self._elements[idx], self._elements[Max] = self._elements[Max], self._elements[idx]
-            self._downheap(Max)
+                Min = right
+            Min = left
+        if Min != idx:
+            self._elements[idx], self._elements[Min] = self._elements[Min], self._elements[idx]
+            self._downheap(Min)
 
     def __str__(self):
         return str(self._elements[:self._count])
