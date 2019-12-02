@@ -11,7 +11,7 @@ A linked list can be reversed either iteratively or recursively.
 Could you implement both?
 
 [Method 1] Iteration + 3-pointer(prev, curr, nxt)
-实际上就是把链表的指向全部反转,每次都要更新prev为curr。
+实际上就是遍历的时候把前后节点先存起来，再把链表的指向全部反转,每次都要更新prev和nxt。
 注意链接最后的节点到prev后再返回。
 Assume that we have linked list 1 → 2 → 3 → Ø, we would like to change it to Ø ← 1 ← 2 ← 3.
 While you are traversing the list, change the current node's next pointer to point to its previous element.
@@ -45,7 +45,8 @@ class Solution:
 '''
 [Method 2]: Recursion
 让函数返回只是链接方向改变了的链表，其在计算机内存储的reference地址是不变的
-Time: O(n); Space: O(n)
+Time: O(n);
+Space: O(n)， 由于使用递归，将会使用隐式栈空间。递归深度可能会达到 n 层。
 Runtime: 44 ms, faster than 55.94% of Python3 online submissions for Reverse Linked List.
 Memory Usage: 19.2 MB, less than 18.18% of Python3 online submissions for Reverse Linked List.
 '''
@@ -58,7 +59,7 @@ Memory Usage: 19.2 MB, less than 18.18% of Python3 online submissions for Revers
 class Solution:
     def reverseList(self, head: ListNode) -> ListNode:
         if not head or not head.next: return head
-        p = self.reverseList(head.next)
-        head.next.next = head
+        p = self.reverseList(head.next) # p存的是反转前的尾部node，并且head.next节点所有的指针全部反转，
+        head.next.next = head          # 反转后原来的head.next变为尾部node,指向None,所以这里将它反转链接到head
         head.next = None
         return p
