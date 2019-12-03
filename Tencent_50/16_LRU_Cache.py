@@ -211,6 +211,7 @@ class LRUCache:
             self.lrucache.popitem(last = False)
 
 '''
+???疑问
 Another solution by using dictionary and deque
 Note: deque.remove() actually uses O(capacity) Time
 If we use OrderedDict, both get() and put() operations would be O(1) on average.
@@ -237,10 +238,3 @@ def set(self, key, value):
         self.dic.pop(v)
     self.deque.append(key)
     self.dic[key] = value
-
-
-
-'''
-
-
-'''
