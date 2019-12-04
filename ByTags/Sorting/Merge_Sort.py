@@ -1,4 +1,18 @@
-# in-place
+'''
+Best      Average    Worst    Memory    Stable      Method        Note
+nlogn       nlogn    nlogn      O(n)      Yes       Selection     n大时较好
+
+1、把序列递归地分成短序列，递归出口是短序列只有1个元素(认为直接有序)或者2个序列(1次比较和交换),
+然后把各个有序的短序列合并成一个有序的长序列，不断合并直到原序列全部排好序；
+
+2、合并过程中我们可以保证如果两个当前元素相等时，我们把处在前面的序列的元素保存在结果序列的前面，这样就保证了稳定性；
+
+3、稳定排序算法；
+
+4、空间复杂度 O(n);
+n + logn = 临时的数组和递归时压入栈的数据占用的空间；所以空间复杂度为: O(n)。
+'''
+
 def merge_sort(arr):
     if len(arr) <= 1: return
     # list slicing making new copies of arr, using extra space

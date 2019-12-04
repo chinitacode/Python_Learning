@@ -1,10 +1,71 @@
 '''
-[缺点]：
-1.不稳定：不稳定性是由随机选择pivot导致，如果每次固定列首为Pivot，则可以实现稳定的快排。
+Best      Average    Worst     Memory              Stable      Method        Note
+nlogn       nlogn     n^2    average O(logn)         No         Swap       n大时较好
 
-[优点]：
-1.Runs O(nlogn) on average
-2.Works in place(minimal extral memory needed)
+1、确定枢轴值pivot，和index为0的元素互换（导致不稳定，如果每次固定列首为Pivot，则可以实现稳定的快排）；
+
+2、围绕着pivot进行partition, 维护i,j两个指针，i为从左到右遍历时第一个大于或者等于pivot值元素的index，
+j从左往右遍历，记录还未遍历（下一个要遍历的）元素的位置，如果arr[j] < pivot, 把i、j元素互换，i += 1,
+最后把索引为i-1的元素和pivot_idx元素互换，因为i为大于或者等于pivot的最左的元素，则i左边的元素全部小于pivot，
+那么i-1就是pivot的位置；
+
+3、对左右两部分进行再递归调用进行排序；
+
+4、每次partion都是部分排序，因为每次分区后只确定了pivot的正确位置，在pivot左边的都小于Pivot,
+右边的大于或者等于pivot，分区partition时间复杂度为O(n)，因为只遍历一遍元素，in-place交换只需O(1)的空间；
+减小问题规模，因为只需要再对左右部分分别进行排序，不像merge sort一样最后还需要合并元素；
+
+5、O(nlogn) on average；理想情况为如果每次的pivot都为排序后的中位数，
+就是刚好能把元素分为小于和大于等于它的两部分，
+则由T(n) = 2T(n/2) + n ==> T(n) = O(nlogn);
+
+6、worst case：O(n^2), 当pivot为最小值，并且元素都已经排好序了的情况，如arr=[1,2,3,4,5]
+（或者arr = [3,3,3,3,3,3]）,有T(n) = T(n-1) + n = T(n-2) + (n-1) + n = ...
+= n(n+1)/2 = n**2, 则是n的平凡的复杂度。所以对pivot的选择需要优化。
+
+7、最好情况，递归树的深度为log2n，其空间复杂度也就为O(logn)，
+  最坏情况，需要进行n‐1递归调用，其空间复杂度为O(n)，
+  平均情况，空间复杂度也为O(logn)
+
+8、不稳定（因为随机选择pivot）。
+
+'''
+def partition(arr,lo,hi):
+    p = lo
+    i = lo + 1
+    for j in range(i, hi+1):
+        if arr[j] < arr[p]:
+            if i != j:
+                arr[i],arr[j] = arr[j],arr[i]
+            i += 1
+    arr[p],arr[i-1] = arr[i-1],arr[p]
+    return i-1
+
+def quick_sort(arr):
+    def _quick_sort(arr,lo,hi):
+        if lo >= hi:
+            return
+        pivot_idx = partition(arr,lo,hi)
+        _quick_sort(arr, lo, pivot_idx-1)
+        _quick_sort(arr, pivot_idx+1, hi)
+    _quick_sort(arr, 0, len(arr) - 1)
+
+if __name__ == "__main__":
+    random_list_of_nums = [5, 8, 10, 8, 9, 10, 8]
+    print('Before: ',random_list_of_nums)
+    quick_sort(random_list_of_nums)
+    print('After: ',random_list_of_nums)
+    random_list_of_nums = [4,4,2,4,5,6,1,9,4]
+    print('Before: ',random_list_of_nums)
+    quick_sort(random_list_of_nums)
+    print('After: ',random_list_of_nums)
+    #Output:
+    '''
+    Before:  [5, 8, 10, 8, 9, 10, 8]
+    After:  [5, 8, 8, 8, 9, 10, 10]
+    Before:  [4, 4, 2, 4, 5, 6, 1, 9, 4]
+    After:  [1, 2, 4, 4, 4, 4, 5, 6, 9]
+
 
 [Key Idea]:
 Partition array around a pivot element:
@@ -50,7 +111,7 @@ Partition(A, l, r)     #l, r are boundaries of subarrays, input = A[l,r+1]
 - i = l+1
 - for j = l+1 to r:
     #if A[j] > p, do nothing
-    - if A[j] < p:     #swap the this new element with the left-most element that's bigger than the pivot.
+    - if A[j] < p:           #swap the this new element with the left-most element that's bigger than the pivot.
       - swap A[j] and A[i]    #because "i" is keeping track of the boundary between the elements less than the pivot and bigger than the pivot,
       - i += 1             #we can immediately access the leftmost element bigger than the pivot. That's just the "i"th entry in the array.
 - swap A[l] and A[i-1]
@@ -59,52 +120,6 @@ Partition(A, l, r)     #l, r are boundaries of subarrays, input = A[l,r+1]
 O(n), where n = r-l+1, the length of the input (subarray)
 Reason: O(1) work per array entry. Also, clearly works in place() repeated swap.
 
-[代码执行：]
-'''
-def partition(arr,lo,hi):
-    p = lo
-    i = lo + 1
-    for j in range(i, hi+1):
-        if arr[j] < arr[p]:
-            if i != j:
-                arr[i],arr[j] = arr[j],arr[i]
-            i += 1
-    arr[p],arr[i-1] = arr[i-1],arr[p]
-    return i-1
-
-def quick_sort(arr):
-    def _quick_sort(arr,lo,hi):
-        if lo >= hi:
-            return
-        pivot_idx = partition(arr,lo,hi)
-        _quick_sort(arr, lo, pivot_idx-1)
-        _quick_sort(arr, pivot_idx+1, hi)
-    _quick_sort(arr, 0, len(arr) - 1)
-
-if __name__ == "__main__":
-    random_list_of_nums = [5, 8, 10, 8, 9, 10, 8]
-    print('Before: ',random_list_of_nums)
-    quick_sort(random_list_of_nums)
-    print('After: ',random_list_of_nums)
-    random_list_of_nums = [4,4,2,4,5,6,1,9,4]
-    print('Before: ',random_list_of_nums)
-    quick_sort(random_list_of_nums)
-    print('After: ',random_list_of_nums)
-    #Output:
-    '''
-    Before:  [5, 8, 10, 8, 9, 10, 8]
-    After:  [5, 8, 8, 8, 9, 10, 10]
-    Before:  [4, 4, 2, 4, 5, 6, 1, 9, 4]
-    After:  [1, 2, 4, 4, 4, 4, 5, 6, 9]
-    '''
-
-'''
-[Time Complexity]：
-1.理想情况：如果每次的pivot都为排序后的中位数，就是刚好能把元素分为小于和大于等于它的两部分，
-则由T(n) = 2T(n/2) + n ==> T(n) = O(nlogn);
-2.但是worst case：当pivot为最小值，并且元素都已经排好序了的情况，如arr=[1,2,3,4,5]
-（或者arr = [3,3,3,3,3,3]）,有T(n) = T(n-1) + n = T(n-2) + (n-1) + n = ...
-= n(n+1)/2 = n**2, 则是n的平凡的复杂度。所以对pivot的选择需要优化。
 
 [对pivot的选择]：
 1.一般可以用三点中值法，即选arr[0],arr[n//2]和arr[-1],找出其中位数的Index就是pivot的index，
