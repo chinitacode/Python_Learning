@@ -67,15 +67,11 @@ class Solution:
         if not matrix or not matrix[0]: return
         n = len(matrix)
         if k < 0 or k > n**2: return
-        #先把每一行行首元素加入最小堆里，O(n)
         h = [[matrix[row][0], row, 0] for row in range(n)]
-        # O(n)
         heapq.heapify(h)
-        #O(k)
         while k > 0:
             num,i,j = heapq.heappop(h)
             if j + 1 < n:
-                #O(logn)
                 heapq.heappush(h,[matrix[i][j+1],i,j+1])
             k -= 1
         return num
