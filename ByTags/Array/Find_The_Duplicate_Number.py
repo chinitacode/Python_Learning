@@ -20,7 +20,8 @@ Your runtime complexity should be less than O(n2).
 There is only one duplicate number in the array, but it could be repeated more than once.
 
 [注]：
-按照 ：1、哈希表判重(用set()或者Counter(),O(n)的时间和空间)，
+按照 ：
+1、哈希表判重(用set()或者Counter(),O(n)的时间和空间)，
 2、O(nlgn)的排序（用quick sort可以in-place但是mutate了原数组）以后相邻元素相等即找到的重复(O(nlgn的时间和O(1)的空间))；
 3、桶排序（鸽子洞原理，即“抽屉原理”）(O(n)的时间,O(1)的空间但是mutate了原数组)；
 4、二分法。
@@ -92,7 +93,7 @@ class Solution(object):
 
 
 '''
-二分法
+二分法(只适用于只有一个数重复的情况)
 按题目表达，设数组长度为n，则数组中元素∈[1,n−1]，且只有一个重复元素。
 一个直观的想法，设一个数字k∈[1,n−1]，统计数组中小于等于kk的数字的个数count：
 
