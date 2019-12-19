@@ -32,6 +32,8 @@ Note:
 All of the nodes' values will be unique.
 p and q are different and both values will exist in the binary tree.
 
+
+
 ***   ***  ***  *** Watch out: ***  ***  ***  ***  ***
 Note that the problem description said that " two given nodes in the tree."
 So the parameters p and q are node references in the tree.
@@ -43,27 +45,29 @@ Use ''if (root == p) instead of if(root.val == p.val)''
 --------------------
 Recursion solutionn: Divide and Conquer + DFS（Preorder Traversal）
 --------------------
-Time:O(n)   Space:O(n)
+[Method 1]
+1.最低公共祖先的定义是，在一个二叉树中，我们能找到的最靠近叶子的节点，该节点同时是p和q的祖先节点。
+注意，如果p或者q本身也可以作为自己的祖先。
+
+2.这个题里面lowestCommonAncestor(root, p, q)函数的作用是判断p和q在root树中最低的公共祖先是什么，返回值是公共祖先。
+如果当前节点等于其中的p和q某一个节点，那么找到了节点（即找到了其中一个），返回该节点，否则在左右子树分别寻找。
+
+3.左右子树两个返回的是什么呢？按照该递归函数的定义，即找到了左子树和右子树里p和q的公共祖先，注意祖先可以是节点自己。
+然后根据左右侧找到的节点做进一步的判断。
+
+4.left返回的是左子树里找到的p、q的公共祖先（即p和q中的其中一个节点）
+因为p或者q本身也可以作为自己的祖先，找到了则返回自己。
+right返回值同理。
+
+5.如果left and right，则p和q必定分别分部在左右子树，不然必有一个子树为空！
+
+6.如果left and right，说明分别找到了p和q，那么LCA就是当前节点。
+否则就在不为空的那个结果就是所求。
+    
+[Time]: O(n)
+[Space]: O(n)
 Runtime: 64 ms, faster than 75.63% of Python online submissions for Lowest Common Ancestor of a Binary Tree.
 Memory Usage: 24 MB, less than 82.35% of Python online submissions for Lowest Common Ancestor of a Binary Tree.
-[分析]
-    1.最低公共祖先的定义是，在一个二叉树中，我们能找到的最靠近叶子的节点，该节点同时是p和q的祖先节点。
-    注意，如果p或者q本身也可以作为自己的祖先。
-
-    2.这个题里面lowestCommonAncestor(root, p, q)函数的作用是判断p和q在root树中最低的公共祖先是什么，返回值是公共祖先。
-    如果当前节点等于其中的p和q某一个节点，那么找到了节点（即找到了其中一个），返回该节点，否则在左右子树分别寻找。
-
-    3.左右子树两个返回的是什么呢？按照该递归函数的定义，即找到了左子树和右子树里p和q的公共祖先，注意祖先可以是节点自己。
-    然后根据左右侧找到的节点做进一步的判断。
-
-    4.left返回的是左子树里找到的p、q的公共祖先（即p和q中的其中一个节点）
-    因为p或者q本身也可以作为自己的祖先，找到了则返回自己。
-    right返回值同理。
-
-    5.如果left and right，则p和q必定分别分部在左右子树，不然必有一个子树为空！
-
-    6.如果left and right，说明分别找到了p和q，那么LCA就是当前节点。
-    否则就在不为空的那个结果就是所求。
 '''
 class Solution(object):
     def lowestCommonAncestor(self, root, p, q):
@@ -88,8 +92,93 @@ class Solution(object):
 
 '''
 --------------------
-Iterative solution: stack + dictionary + helper method
+Iterative solution:
 --------------------
+[Method 1]: 前序遍历stack + hashmap + 2list保存路径
+
+用一个哈希表来储存当前节点的父节点，
+前序遍历树中节点，直到p和q都找到，则停止遍历(worst case是当p和q分立树两侧时，需遍历所有节点n)。
+然后再分别从哈希表中取出p和q的路径，append入其列表path中，
+选择最长的一条path，从当前节点开始for循环，看该节点是否存在于另一path种，
+如果存在，则返回该节点，即为LCA。
+
+[Time]: O(n)前序遍历 + O(h)输出包含节点到root的路径O(h) = O(n)；
+[Space]: hashmap的空间 + stack的空间，最坏O(n), 当前序遍历完所有节点导致哈希表储存了所有节点的parent时。
+Runtime: 68 ms, faster than 95.11% of Python3 online submissions for Lowest Common Ancestor of a Binary Tree.
+Memory Usage: 16.4 MB, less than 100.00% of Python3 online submissions for Lowest Common Ancestor of a Binary Tree.
+'''
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if not root or not p or not q: return None
+        if p == root or q == root:
+            return root
+        stack = [root]
+        hashmap = {root: None}
+        while not (p in hashmap and q in hashmap):
+            node = stack.pop()
+            if node.right:
+                stack.append(node.right)
+                hashmap[node.right] = node
+            if node.left:
+                stack.append(node.left)
+                hashmap[node.left] = node
+            if not stack: return None  #增加stack条件判断是否p,q存在于树中
+        node1, node2 = p, q
+        path1, path2 = [], []
+        while node1:
+            path1.append(node1)
+            node1 = hashmap[node1]
+        while node2:
+            path2.append(node2)
+            node2 = hashmap[node2]
+        #反着从path1和path2的根节点开始去重，直到找到最后一个公共节点
+        # 几乎O(1)
+        while path1 and path2 and path1[-1] == path2.pop():
+            res = path1.pop()
+        return res
+
+'''
+[Method 2]:
+先把p和q的parent加入字典，再用一个set来存储p的路径节点，判断q节点是否在p路径中(0(1))，
+通过循环让q往上（parent）更新(O(h))，最终相交的节点就是所求的LCA。
+[Time]: O(n)
+[Space]: O(n) + O(h), 只需要保存一条路径，节省了一点空间。
+
+Runtime: 72 ms, faster than 88.38% of Python3 online submissions for Lowest Common Ancestor of a Binary Tree.
+Memory Usage: 16.4 MB, less than 100.00% of Python3 online submissions for Lowest Common Ancestor of a Binary Tree.
+'''
+class Solution(object):
+    def lowestCommonAncestor(self, root, p, q):
+        """
+        :type root: TreeNode
+        :type p: TreeNode
+        :type q: TreeNode
+        :rtype: TreeNode
+        """
+        stack = [root]
+        parent = {root: None}
+        # O(n)
+        while p not in parent or q not in parent:
+            node = stack.pop()
+            if node.right:
+                parent[node.right] = node
+                stack.append(node.right)
+            if node.left:
+                parent[node.left] = node
+                stack.append(node.left)
+        ancestors = []
+        # O(h)
+        while p:
+            ancestors.append(p)
+            p = parent[p]
+        # O(h)
+        while q not in ancestors:
+            q = parent[q]
+        return q
+
+
+'''
+[Method 2]: stack + dictionary + helper method
 use stack to traverse(pre-order) and dictionary to store the parent node of
 each node(until target node found) in the helper method
 
@@ -143,43 +232,3 @@ class Solution(object):
         while answer[-1] != root:
             answer.append(parents[answer[-1]])
         return answer
-
-'''
------------
-优化版代码：
------------
-先把p和q的parent加入字典，再用一个list来存储p的路径节点，判断q节点是否在p路径中，
-通过循环让q往上（parent）更新，最终相交的节点就是所求的LCA。
-[Time] O(n)    [Space]O(n)
-
-Runtime: 52 ms, faster than 98.72% of Python online submissions for Lowest Common Ancestor of a Binary Tree.
-Memory Usage: 19.4 MB, less than 100.00% of Python online submissions for Lowest Common Ancestor of a Binary Tree.
-'''
-class Solution(object):
-    def lowestCommonAncestor(self, root, p, q):
-        """
-        :type root: TreeNode
-        :type p: TreeNode
-        :type q: TreeNode
-        :rtype: TreeNode
-        """
-        stack = [root]
-        parent = {root: None}
-        # O(n)
-        while p not in parent or q not in parent:
-            node = stack.pop()
-            if node.right:
-                parent[node.right] = node
-                stack.append(node.right)
-            if node.left:
-                parent[node.left] = node
-                stack.append(node.left)
-        ancestors = []
-        # O(h)
-        while p:
-            ancestors.append(p)
-            p = parent[p]
-        # O(h)
-        while q not in ancestors:
-            q = parent[q]
-        return q

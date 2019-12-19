@@ -19,10 +19,17 @@ Note:
 All of the nodes' values will be unique.
 p and q are different and both values will exist in the BST.
 
-Method1: Recursion
-Time: O(lgn)
-Runtime: 60 ms, faster than 96.06% of Python online submissions for Lowest Common Ancestor of a Binary Search Tree.
-Memory Usage: 19.9 MB, less than 47.73% of Python online submissions for Lowest Common Ancestor of a Binary Search Tree.
+
+【注意！！！】题目没有说p.val一定小于q.val!
+
+
+[Method 1]: Recursion
+分析可得，只要p和q分立在root两端，或者p和q中其中有一个为root，LCA就为root；
+反之，则根据其位置选择一边的子树进行递归。
+[Time]: O(logn)，因为将problem size减半了。
+[Space]: O(logn),递归树高度
+Runtime: 72 ms, faster than 96.82% of Python3 online submissions for Lowest Common Ancestor of a Binary Search Tree.
+Memory Usage: 16.9 MB, less than 100.00% of Python3 online submissions for Lowest Common Ancestor of a Binary Search Tree.
 '''
 # Definition for a binary tree node.
 # class TreeNode(object):
@@ -39,6 +46,7 @@ class Solution(object):
         :type q: TreeNode
         :rtype: TreeNode
         """
+        if not root or not p or not q: return None
         if p.val < root.val > q.val:
             return self.lowestCommonAncestor(root.left, p, q)
         if p.val > root.val < q.val:
@@ -62,10 +70,11 @@ def lowestCommonAncestor(self, root, p, q):
            self.lowestCommonAncestor((root.left, root.right)[p.val > root.val], p, q)
 
 '''
-Method2: Iteration
-Time: O(lgn) Space:O(lgn)
-Runtime: 56 ms, faster than 99.21% of Python online submissions for Lowest Common Ancestor of a Binary Search Tree.
-Memory Usage: 20 MB, less than 25.00% of Python online submissions for Lowest Common Ancestor of a Binary Search Tree.
+[Method 2]: Iteration
+[Time]: O(logn)
+[Space]: O(1)
+Runtime: 76 ms, faster than 91.14% of Python3 online submissions for Lowest Common Ancestor of a Binary Search Tree.
+Memory Usage: 16.6 MB, less than 100.00% of Python3 online submissions for Lowest Common Ancestor of a Binary Search Tree.
 '''
 class Solution(object):
     def lowestCommonAncestor(self, root, p, q):
