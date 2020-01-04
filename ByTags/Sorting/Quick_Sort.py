@@ -30,6 +30,7 @@ j从左往右遍历，记录还未遍历（下一个要遍历的）元素的位�
 8、不稳定（因为随机选择pivot）。
 
 '''
+# always use the first element of the array as the pivot element
 def partition(arr,lo,hi):
     p = lo
     i = lo + 1
@@ -42,13 +43,19 @@ def partition(arr,lo,hi):
     return i-1
 
 def quick_sort(arr):
+    counter = 0
     def _quick_sort(arr,lo,hi):
+        global counter
         if lo >= hi:
             return
         pivot_idx = partition(arr,lo,hi)
         _quick_sort(arr, lo, pivot_idx-1)
+        counter += pivot_idx - lo - 1
         _quick_sort(arr, pivot_idx+1, hi)
+        counter += hi - pivot_idx - 1
     _quick_sort(arr, 0, len(arr) - 1)
+    counter += len(arr) - 1
+    print(counter)
 
 if __name__ == "__main__":
     random_list_of_nums = [5, 8, 10, 8, 9, 10, 8]
