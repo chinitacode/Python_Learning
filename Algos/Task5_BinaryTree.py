@@ -198,7 +198,7 @@ class BST:
               /   \
              5     6
 
-Output: [1,2,3,5,4,6,7,8,9]
+Output: [1,2,3,4,5,6,7,8,9]
 
         Algorithm preOrder(v): #v--vertex,节点
             visit(v)
