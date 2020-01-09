@@ -78,7 +78,7 @@ class Solution(object):
 
 
 '''
-[Method 2]: Iteration + stack
+[Method 2]: Iteration + stack（DFS）
 我们需要交换树中所有节点的左孩子和右孩子。
 因此可以创一个栈来存储所有左孩子和右孩子还没有被交换过的节点。
 开始的时候，只有根节点在这个栈里面。
