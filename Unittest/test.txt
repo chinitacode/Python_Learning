@@ -1,0 +1,14 @@
+* docstring testing command:
+winpty python -m doctest circles.py
+* -m means 'module'
+
+* unittest command:
+winpty python -m unittest test_circles
+or:
+winpty python -m unittest    # it will search for tests and run them
+
+
+* More assert methods for unittest:
+Enter python interactive mode: winpty python
+>>> import unittest
+>>> help(unittest.TestCase.assertAlmostEqual)
