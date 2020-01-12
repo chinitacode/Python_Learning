@@ -1,0 +1,10 @@
+Add all files to the stage:
+git add .
+
+Download a remote project:
+git clone [project link]
+
+Delete a file in the remote repository but maintain the local file (don't forget to commit and then push):
+git rm -r --cached [file name]
+
+[Note]:  '--cached' allows you to main the local file
