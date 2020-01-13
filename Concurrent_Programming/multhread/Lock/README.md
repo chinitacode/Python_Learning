@@ -1,4 +1,8 @@
-# [Lock Objects](https://docs.python.org/3/library/threading.html#lock-objects) 
+# Locks of Threads 
+由于线程之间的任务执行是CPU进行随机调度的，并且每个线程可能只执行了n条指令之后就被切换到别的线程了。当多个线程同时操作一个对象，如果没有很好地保护该对象，会造成程序结果的不可预期，这被称为“线程不安全”。为了保证数据安全，我们设计了线程锁，即同一时刻只允许一个线程操作该数据。线程锁用于锁定资源，可以同时使用多个锁，当你需要独占某一资源时，任何一个锁都可以锁这个资源，就好比你用不同的锁都可以把相同的一个箱子锁住是一个道理。 
+
+
+### [Lock Objects](https://docs.python.org/3/library/threading.html#lock-objects) 
 A primitive lock is a synchronization primitive that is not owned by a particular thread when locked.
 In Python, it is currently the lowest level synchronization primitive available, implemented directly by the _thread extension module. 
 
