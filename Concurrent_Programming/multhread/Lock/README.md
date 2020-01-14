@@ -66,7 +66,21 @@ When invoked on an unlocked lock, a RuntimeError is raised.
 **locked**() 
 Return **true** if the lock is acquired. 
 
-E.g.
+E.g.1 
+```
+import threading
+
+R=threading.Lock()
+
+R.acquire() #
+#R.acquire()如果这里还有一个acquire，你会发现，程序就阻塞在这里了，因为上面的锁已经被拿到了并且还没有释放的情况下，再去拿就阻塞住了
+'''
+对公共数据的操作
+'''
+R.release()
+```
+
+E.g.2 
 ```
 import threading
 import time
@@ -92,3 +106,10 @@ if __name__ == '__main__':
 ```
 
 RLock的使用方法和Lock一模一样，只不过它支持重入锁。该锁对象内部维护着一个Lock和一个counter对象。counter对象记录了acquire的次数，使得资源可以被多次require。最后，当所有RLock被release后，其他线程才能获取资源。在同一个线程中，RLock.acquire()可以被多次调用，利用该特性，可以解决部分死锁问题。 
+
+
+### Lock和join的区别： 
+可能有疑问:既然加锁会让运行变成串行,那么我在start之后立即使用join,就不用加锁了啊,也是串行的效果啊？ 
+没错，在start之后立刻使用join,肯定会将100个任务的执行变成串行,毫无疑问,最终n的结果也肯定是0,是安全的,但问题是 
+start后立即join,任务内的所有代码都是串行执行的,而加锁,只是加锁的部分即修改共享数据的部分是串行的 
+单从保证数据安全方面,二者都可以实现,但很明显是加锁的效率更高。 
