@@ -48,3 +48,113 @@ generator.close()
 或者抛出了StopIteration异常（通常是指运行到结尾），调用方不会报错。
 如果收到GeneratorExit异常，生成器一定不能产出值，否则解释器会抛出RuntimeError异常。生成器抛出的其他异常会向上冒泡，传给调用方。 
 
+### yield VS. yield from: 
+yield from 是在Python3.3才出现的语法。所以这个特性在Python2中是没有的。
+
+yield from 后面需要加的是可迭代对象，它可以是普通的可迭代对象，也可以是迭代器，甚至是生成器。
+
+yield from 其实就是等待另外一个协程的返回。 
+
+简单应用：拼接可迭代对象 
+```
+def func():
+    for i in range(10):
+        yield i
+
+print(list(func()))
+```
+可以写成： 
+```
+def func():
+    yield from range(10)
+
+print(list(func()))
+```
+或者： 
+```
+# 字符串
+astr='ABC'
+# 列表
+alist=[1,2,3]
+# 字典
+adict={"name":"wangbm","age":18}
+# 生成器
+agen=(i for i in range(4,8))
+
+def gen(*args, **kw):
+    for item in args:
+        for i in item:
+            yield i
+
+new_list=gen(astr, alist, adict， agen)
+print(list(new_list))
+# ['A', 'B', 'C', 1, 2, 3, 'name', 'age', 4, 5, 6, 7]
+```
+使用yield from 
+```
+# 字符串
+astr='ABC'
+# 列表
+alist=[1,2,3]
+# 字典
+adict={"name":"wangbm","age":18}
+# 生成器
+agen=(i for i in range(4,8))
+
+def gen(*args, **kw):
+    for item in args:
+        yield from item
+
+new_list=gen(astr, alist, adict, agen)
+print(list(new_list))
+# ['A', 'B', 'C', 1, 2, 3, 'name', 'age', 4, 5, 6, 7]
+```
+由上面两种方式对比，可以看出，yield from后面加上可迭代对象，他可以把可迭代对象里的每个元素一个一个的yield出来，对比yield来说代码更加简洁，结构更加清晰。 
+
+### 复杂应用：生成器的嵌套: 
+当 yield from 后面加上一个生成器后，就实现了生成的嵌套。 
+当然实现生成器的嵌套，并不是一定必须要使用yield from，而是使用yield from可以让我们避免让我们自己处理各种料想不到的异常，而让我们专注于业务代码的实现。 
+如果自己用yield去实现，那只会加大代码的编写难度，降低开发效率，降低代码的可读性。既然Python已经想得这么周到，我们当然要好好利用起来。 
+讲解它之前，首先要知道这个几个概念: 
+
+>1、调用方：调用委派生成器的客户端（调用方）代码 
+>2、委托生成器：包含yield from表达式的生成器函数 
+>3、子生成器：yield from后面加的生成器函数 
+
+实例： 
+实现实时计算平均值： 
+比如，第一次传入10，那返回平均数自然是10. 
+第二次传入20，那返回平均数是(10+20)/2=15 
+第三次传入30，那返回平均数(10+20+30)/3=20 
+```
+# 子生成器
+def average_gen():
+    total = 0
+    count = 0
+    average = 0
+    while True:
+        new_num = yield average
+        count += 1
+        total += new_num
+        average = total/count
+
+# 委托生成器
+def proxy_gen():
+    while True:
+        yield from average_gen()
+
+# 调用方
+def main():
+    calc_average = proxy_gen()
+    next(calc_average)            # 预激下生成器
+    print(calc_average.send(10))  # 打印：10.0
+    print(calc_average.send(20))  # 打印：15.0
+    print(calc_average.send(30))  # 打印：20.0
+
+if __name__ == '__main__':
+    main()
+
+```
+
+
+
