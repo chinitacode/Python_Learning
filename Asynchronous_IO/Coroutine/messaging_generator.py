@@ -9,6 +9,11 @@
 也有不同点，线程之间要频繁进行切换，加锁，解锁，从复杂度和效率来看，和协程相比，这确是一个痛点。
 协程通过使用 yield 暂停生成器，可以将程序的执行流程交给其他的子程序，从而实现不同子程序的之间的交替执行。
 
+【注意！！！】：
+如果协程还没激活（状态是'GEN_CREATED'），就立即把None之外的值发给它，
+因此，始终要先调用next(generator)激活协程（也可以调用generator.send(None)），这一过程被称作预激活。
+会出现TypeError: can't send non-None value to a just-started generator。
+
 下面通过一个简明的演示来看看，如何向生成器中发送消息。
 '''
 # 在范围N内跳跃
@@ -23,7 +28,7 @@ def jumping_range(N):
 
 if __name__ == '__main__':
     itr = jumping_range(5) # 生成跳跃范围为5的生成器iter
-    print(next(itr)) # 不给iter传入任何参数来激活iter，则默认传入None赋值给yield前面的变量
+    print(next(itr)) # 预激活：不给iter传入任何参数来激活iter，则默认传入None赋值给yield前面的变量
     print(itr.send(2))
     print(next(itr))
     print(itr.send(-1))

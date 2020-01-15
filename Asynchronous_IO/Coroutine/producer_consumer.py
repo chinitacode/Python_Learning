@@ -36,7 +36,7 @@ def consumer():
         r = '200 OK'
 
 def producer(c):
-    c.send(None)  #调用consumer生成器，把None赋值给consumer函数里的n，consumer生成器返回r,即 ‘’，但因没有print,所以不打印任何东西
+    c.send(None)  #预激活consumer生成器，把None赋值给consumer函数里的n，consumer生成器返回r,即 ‘’，但因没有print,所以不打印任何东西
     n = 0
     while n < 5:
         n += 1
