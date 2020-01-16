@@ -31,12 +31,13 @@ def consumer():
     while True:      # yield 后 r的值是用来return的
         n = yield r  # n的值由send传入，否则(比如直接用next(generator)调用时)为None
         if not n:
+            print('n is None')
             return
         print('[CONSUMER] Consuming %s...' % n)
         r = '200 OK'
 
 def producer(c):
-    c.send(None)  #预激活consumer生成器，把None赋值给consumer函数里的n，consumer生成器返回r,即 ‘’，但因没有print,所以不打印任何东西
+    c.send(None) #预激活生成器c，把None赋值给consumer函数里的n，第一次调用consumer的yield返回r,即 ‘’，但因没有print,所以不打印任何东西
     n = 0
     while n < 5:
         n += 1
