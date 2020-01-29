@@ -1,3 +1,9 @@
+'''
+re.match(pattern, string[, flags])
+
+从首字母开始开始匹配，string如果包含pattern子串，则匹配成功，返回Match对象，失败则返回None，
+若要完全匹配，pattern要以$结尾。
+'''
 import re
 
 p = re.compile('[a-z]+')
