@@ -1,3 +1,5 @@
+#发送一个简单的HTTP GET请求到远程的服务上
+
 from urllib import request, parse
 
 # Base URL being accessed
@@ -13,8 +15,6 @@ parms = {
 query_string = parse.urlencode(parms)
 
 # Make a GET request and read the response
-url = request.urlopen(base_url + '?' + query_string)
-
-response = url.read().decode()
+response = request.urlopen(base_url + '?' + query_string).read().decode()
 
 print(response)
