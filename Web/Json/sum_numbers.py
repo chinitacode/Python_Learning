@@ -1,4 +1,4 @@
-from urllib import request, parse
+from urllib import request
 import ssl, json
 
 ctx = ssl.create_default_context()
