@@ -109,7 +109,130 @@ class Solution(object):
             return True
         return False
 
+'''
+[Method 1.2] Use 3 flags
+We use three flags: met_dot, met_e, met_digit, mark if we have met ., e
+or any digit so far. First we strip the string,
+then go through each char and make sure:
 
+If char == + or char == -, then prev char (if there is) must be e
+. cannot appear twice or after e
+e cannot appear twice, and there must be at least one digit before and after e
+All other non-digit char is invalid
+
+Runtime: 28 ms, faster than 86.73% of Python3 online submissions for Valid Number.
+Memory Usage: 12.7 MB, less than 100.00% of Python3 online submissions for Valid Number.
+'''
+class Solution(object):
+    def isNumber(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        s = s.strip()
+        met_dot = met_e = met_digit = False
+        for i, char in enumerate(s):
+            if char in ['+', '-']:
+                if i > 0 and s[i-1] != 'e':
+                    return False
+            elif char == '.':
+                if met_dot or met_e: return False
+                met_dot = True
+            elif char == 'e':
+                if met_e or not met_digit:
+                    return False
+                met_e, met_digit = True, False # e后必须接，所以这时重置met_digit为False,以免e为最后一个char
+            elif char.isdigit():
+                met_digit = True
+            else:
+                return False
+        return met_digit
+
+'''
+[Method 2]: 正则表达式
+按照法一的思路，可得正则表达式：
+^[+-]?(\.\d+|\d+\.?\d*)([eE][+-]?\d+)?$
+
+Runtime: 28 ms, faster than 86.73% of Python3 online submissions for Valid Number.
+Memory Usage: 12.8 MB, less than 100.00% of Python3 online submissions for Valid Number.
+'''
+import re
+class Solution:
+    p = re.compile(r'^[+-]?(\.\d+|\d+\.?\d*)([eE][+-]?\d+)?$')
+    def isNumber(self, s: str) -> bool:
+        return bool(self.p.match(s.strip()))
+
+
+'''
+[Method 3]: DFA(deterministic finite automaton, 确定性有限自动机)
+Runtime: 28 ms, faster than 86.73% of Python3 online submissions for Valid Number.
+Memory Usage: 12.7 MB, less than 100.00% of Python3 online submissions for Valid Number.
+Next challenges:
+'''
+class Solution(object):
+    def isNumber(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        #define DFA state transition tables
+        states = [{},
+                 # State (1) - initial state (scan ahead thru blanks)
+                 {'blank': 1, 'sign': 2, 'digit':3, '.':4},
+                 # State (2) - found sign (expect digit/dot)
+                 {'digit':3, '.':4},
+                 # State (3) - digit consumer (loop until non-digit)
+                 {'digit':3, '.':5, 'e':6, 'blank':9},
+                 # State (4) - found dot (only a digit is valid)
+                 {'digit':5},
+                 # State (5) - after dot (expect digits, e, or end of valid input)
+                 {'digit':5, 'e':6, 'blank':9},
+                 # State (6) - found 'e' (only a sign or digit valid)
+                 {'sign':7, 'digit':8},
+                 # State (7) - sign after 'e' (only digit)
+                 {'digit':8},
+                 # State (8) - digit after 'e' (expect digits or end of valid input)
+                 {'digit':8, 'blank':9},
+                 # State (9) - Terminal state (fail if non-blank found)
+                 {'blank':9}]
+        currentState = 1
+        for c in s:
+            # If char c is of a known class set it to the class name
+            if c in '0123456789':
+                c = 'digit'
+            elif c in ' \t\n':
+                c = 'blank'
+            elif c in '+-':
+                c = 'sign'
+            # If char/class is not in our state transition table it is invalid input
+            if c not in states[currentState]:
+                return False
+            # State transition
+            currentState = states[currentState][c]
+        # The only valid terminal states are end on digit, after dot, digit after e, or white space after valid input
+        if currentState not in [3,5,8,9]:
+            return False
+        return True
+
+'''
+[Method 4]: 投机法（不可取）
+
+'''
+class Solution(object):
+    def isNumber(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        try:
+            float(s)
+            return True
+        except :
+            return False
+
+'''
+Unittest
+'''
 class TestIsNumeric(unittest.TestCase):
     def setUp(self):
         self._f = Solution().isNumber
