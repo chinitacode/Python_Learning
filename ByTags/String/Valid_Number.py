@@ -44,7 +44,7 @@ The signature of the C++ function had been updated. If you still see your functi
 当e或E前面没有数字时，整个字符串不能表示数字，例如.e1、e1；
 当e或E后面没有整数时，整个字符串不能表示数字，例如12e、12e+5.4;
 
-[Method]:
+[Method 1]: 拆分法
 可以写成 A[.[B]][e/EC], 即有整数存在时，和无整数存在时的 .B[e/EC]。
 A为数值整数部分（可以有正负号的整数），B为紧跟着小数点的为数值的小数部分（无正负号的整数），
 C为紧跟着e/E为数值的指数部分（可以有正负号的整数）。
@@ -110,7 +110,8 @@ class Solution(object):
         return False
 
 '''
-[Method 1.2] Use 3 flags
+[Method 1.2] 逻辑判断法：
+Use 3 flags
 We use three flags: met_dot, met_e, met_digit, mark if we have met ., e
 or any digit so far. First we strip the string,
 then go through each char and make sure:
