@@ -19,7 +19,7 @@ Output:
   []
 ]
 
-[Method 1]: recursion
+[Method 1]: Iteration
 [Time]: O(2^n), to generate all subsets and then copy them into output list.
 [Space]: O(2**n)
 Runtime: 28 ms, faster than 88.51% of Python3 online submissions for Subsets.
@@ -38,3 +38,23 @@ class Solution:
             for e in res[:]: # O(2**n)
                 res.append(e + [num])
         return res
+
+'''
+[Method 2]: Recursion
+[Time]: O(n*2^n)
+Runtime: 28 ms, faster than 88.51% of Python3 online submissions for Subsets.
+Memory Usage: 12.8 MB, less than 100.00% of Python3 online submissions for Subsets.
+'''
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        if len(nums) == 0:
+            return [[]]
+        return self.subsets(nums[:-1]) + [e + [nums[-1]] for e in self.subsets(nums[:-1])]
+'''
+可优化为：
+'''
+def subset(nums):
+    if len(nums) == 0:
+        return [[]]
+    res = subset(nums[:-1])
+    return res + [e + [nums[-1]] for e in res]
