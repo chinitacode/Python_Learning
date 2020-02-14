@@ -1,7 +1,7 @@
 '''
-# 78. Subsets
-
-1# Use recursion:
+78. Subsets [Medium]
+[Method 1]: recursion
+[Time]: O(2^n)
 '''
 def subset(nums):
     '''
