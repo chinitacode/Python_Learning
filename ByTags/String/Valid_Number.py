@@ -168,7 +168,6 @@ class Solution:
 [Method 3]: DFA(deterministic finite automaton, 确定性有限自动机)
 Runtime: 28 ms, faster than 86.73% of Python3 online submissions for Valid Number.
 Memory Usage: 12.7 MB, less than 100.00% of Python3 online submissions for Valid Number.
-Next challenges:
 '''
 class Solution(object):
     def isNumber(self, s):
