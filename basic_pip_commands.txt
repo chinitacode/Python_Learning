@@ -1,0 +1,35 @@
+﻿pip install package-name==version 
+   e.g.  $ pip install django==1.1
+
+pip freeze > requirements.txt  【把当前项目环境所安装的所有的第三方的包（系统的包除外）全部整合起来并写入requirements.txt中（可以发给别人）】
+
+pip install -r requirements.txt   【-r是recursive的缩写，表示以递归地方式一个个地install requirements.txt里面的包】
+
+pip uninstall package-name 
+
+pip list  【列出所有安装好了的包】
+
+pip list -o 【显示可更新的包】
+
+pip install --upgrade package-name
+
+pip install -search
+
+国内镜像：
+http://mirrors.aliyun.com/pypi/simple/   （阿里）
+
+使用国内源安装
+pip install -i http://mirrors.aliyun.com/pypi/simple/ flask
+
+
+常用的国内镜像地址列表如下：
+
+  阿里云 http://mirrors.aliyun.com/pypi/simple/
+
+  中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple
+
+  豆瓣(douban) http://pypi.douban.com/simple
+
+  清华大学 https://pypi.tuna.tsinghua.edu.cn/simple
+
+  中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple
