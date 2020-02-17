@@ -1,5 +1,5 @@
 '''
-78. Subsets [Medium]
+78. Subsets [Medium] 类combination提醒，通过pos来添加后面的元素
 [Method 1]: recursion
 [Time]: O(n*2^n)
 '''
