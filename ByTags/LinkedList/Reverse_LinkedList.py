@@ -56,12 +56,16 @@ Space: O(n)， 由于使用递归，将会使用隐式栈空间。递归深度�
 Runtime: 44 ms, faster than 55.94% of Python3 online submissions for Reverse Linked List.
 Memory Usage: 19.2 MB, less than 18.18% of Python3 online submissions for Reverse Linked List.
 '''
-# Definition for singly-linked list.
-# class ListNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.next = None
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        if not head or not head.next: return head
+        last, lnk = head, head.next
+        head = self.reverseList(head.next)
+        lnk.next = last
+        last.next = None
+        return head
 
+# or optimized as:
 class Solution:
     def reverseList(self, head: ListNode) -> ListNode:
         if not head or not head.next: return head

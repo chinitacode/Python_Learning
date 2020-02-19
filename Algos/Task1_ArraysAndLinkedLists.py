@@ -69,7 +69,7 @@ class DynamicArray:
         self._capacity = c
 
     # O(n)
-    #先把k后面的元素往后挪一位（从尾端开始），再把value插入k
+    #先把k后面的元素往后挪一位（从尾端开始）,即哪里空了就往空的方向移元素，再把value插入k
     def insert(self, k, value):
         if self._n == self._capacity:
             self._resize(2 * self._capacity)
@@ -82,6 +82,7 @@ class DynamicArray:
     def remove(self, value):
         for k in range(self._n):
             if self._A[k] == value:
+                # 从后往前挪元素（从k位开始），即哪里空了就往空的方向移元素
                 for j in range(k, self._n - 1):
                     self._A[j] = self._A[j+1]
                 self._A[self._n - 1] = None
@@ -109,9 +110,6 @@ class DynamicArray:
             self._A[:k + 1] = li[:j + 1]
 
 
-
-
-
     '''
     def __str__(self):
         return f"size: {self._n}, capacity: {len(self._A)}\n{str(self._A[:self._n])}"
@@ -120,29 +118,42 @@ class DynamicArray:
     def __print__(self):
         for i in range(self._n):
             print(self._A[i], end = ',')
-    '''  
+    '''
+if __name__ == '__main__':
+    mylist = DynamicArray()
+    li = [2, 6, 10, 28]
+    print ('size was: ', str(len(mylist)))
+    mylist.append(10)
+    print(mylist[0])
+    mylist.append(20)
+    mylist.append(30)
+    mylist.insert(0, 0)
+    mylist.insert(1, 5)
+    mylist.insert(3, 15)
+    print(mylist)
+    print(mylist.__str__())
+    mylist.remove(20)
+    print(mylist.__repr__())
+    print ('size is: ', str(mylist.__len__()))
+    mylist.merge(li)
+    print(mylist)
 
-mylist = DynamicArray()
-li = [2, 6, 10, 28]
-print ('size was: ', str(len(mylist)))
-mylist.append(10)
-print(mylist[0])
-mylist.append(20)
-mylist.append(30)
-mylist.insert(0, 0)
-mylist.insert(1, 5)
-mylist.insert(3, 15)
-print(mylist)
-print(mylist.__str__())
-mylist.remove(20)
-print(mylist.__repr__())
-print ('size is: ', str(mylist.__len__()))
-mylist.merge(li)
-print(mylist)
 
+'''
+88. Merge Sorted Array) [Easy]
+Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
+Note:
+The number of elements initialized in nums1 and nums2 are m and n respectively.
+You may assume that nums1 has enough space (size that is greater or equal to m + n)
+to hold additional elements from nums2.
+Example:
+Input:
+nums1 = [1,2,3,0,0,0], m = 3
+nums2 = [2,5,6],       n = 3
 
-# 实现两个有序数组合并为一个有序数组 (88. Merge Sorted Array)
-# Two pointers
+Output: [1,2,2,3,5,6]
+
+'''
 def merge(nums1, m, nums2, n):
     """
     Do not return anything, modify nums1 in-place instead.
@@ -165,3 +176,8 @@ Time Complexity: O(m+n) where m and n are the number of non-zero elements in num
 and nums2 respectively, since we are iterating over both arrays in order to merge them.
 Space Complexity: O(1) since we are doing the merging in place
 '''
+
+if __name__ == '__main__':
+    nums1 = [1,2,5,7,9]
+    merge(nums1,[2,4,8,10])
+    print(nums1)

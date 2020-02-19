@@ -6,8 +6,6 @@
 实现求链表的中间结点
 
 '''
-
-
 class Link:
     class Node:
         def __init__(self, value = None, next = None):
@@ -296,8 +294,5 @@ class DLL(Link):
                 s += '<' + str(node.value)
             node = node.next
         s += '>' * self.size
-
-        return  s
-
 
         return  s
