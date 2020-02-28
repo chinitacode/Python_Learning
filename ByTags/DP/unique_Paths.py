@@ -65,7 +65,7 @@ class Solution:
 Runtime: 36 ms, faster than 75.95% of Python3 online submissions for Unique Paths.
 Memory Usage: 13.7 MB, less than 5.77% of Python3 online submissions for Unique Paths.
 '''
-# 因为n一般小于m，所以我们用列来
+import math
 class Solution:
     def uniquePaths(self, m: int, n: int) -> int:
         pre = [1] * n
@@ -79,8 +79,7 @@ class Solution:
 
 '''
 优化2：空间复杂度 O(n)
-cur[j] += cur[j-1], 即cur[j] = cur[j] + cur[j-1] 等价于思路二-->> cur[j] = pre[j] + cur[j-1]，
-等号右边分别是该位置上边的值和左边的值，因此空间复杂度为O(n).
+
 '''
 
 class Solution:
