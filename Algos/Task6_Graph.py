@@ -135,6 +135,7 @@ class Graph:
         return self.adjMatrix[uidx][vidx] is not None
 
     def get2Hops(self, u):
+        # 先找到所有邻居，再找到这些邻居的邻居，加在set里避免重复
         neighbors = self.getNeighbors(u)
         print(neighbors)
         hopset = set()
