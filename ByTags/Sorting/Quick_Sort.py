@@ -145,21 +145,19 @@ def ChoosePivot(A,flag):
     n = len(A)
     first = A[0]
     final = A[n-1]
-    if n/2*2==n:
-        k = n/2 - 1
-        middle = A[k]
-    elif n/2*2<n:
-        k = n/2
-        middle = A[k]
+    if n//2*2==n: # n为偶数, 则中位数有两个，我们选index稍小的那个
+        middle = A[n//2 - 1]
     else:
-        print 'error in ChoosePivot to choose middle element of A'
+        middle = A[n//2]
 
     B = [first,middle,final]
+    # 三点中值法选出的pivot
     med = FindMedian(B)
-    if med==B[0]:
+    # 找出pivot的index
+    if med == B[0]:
         position = 0
-    elif med==B[1]:
-        position = k
+    elif med == B[1]:
+        position = n//2 if n&1 else n//2-1
     else:
         position = n-1
 
