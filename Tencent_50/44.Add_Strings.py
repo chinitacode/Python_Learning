@@ -10,6 +10,13 @@ Both num1 and num2 contains only digits 0-9.
 Both num1 and num2 does not contain any leading zero.
 You must not use any built-in BigInteger library or convert the inputs to integer directly.
 
+【注意！】输出的是str不是数字！！！
+以下方法都用了zip()来bind两个string同时循环（反向，从字符串末，也就是数字的最低位开始循环）。
+需要小心的是：
+1.两字符串可能有空；
+2.两字符串长度可能不等（一方可能多好几位）；
+3.字符串每一位求和到最后，可能还要进一位，此时就看carry是否为0，不为0则还需向高位添一位！
+
 [Method 1]: 先从最低位相加，若长度不同，再把高位补足
 Runtime: 56 ms, faster than 37.28% of Python3 online submissions for Add Strings.
 Memory Usage: 14 MB, less than 5.55% of Python3 online submissions for Add Strings.
