@@ -37,7 +37,7 @@ If this function is called many times, how would you optimize it?
 我们使用 位掩码 来检查数字的第i位。
 一开始，掩码 m=1 因为1的二进制表示是：
 0000 0000 0000 0000 0000 0000 0000 0001
-显然，任何数字跟掩码 11 进行逻辑与运算，都可以让我们获得这个数字的最低位。
+显然，任何数字跟掩码 1 进行逻辑与运算，都可以让我们获得这个数字的最低位。
 检查下一位时，我们将掩码左移一位。
 0000 0000 0000 0000 0000 0000 0000 0010
 并重复此过程。
@@ -68,7 +68,7 @@ class Solution(object):
         """
         bits, mask = 0, 1
         for i in range(32):
-            if n & mask != 0:
+            if n & mask:
                 bits += 1
             mask <<= 1
         return bits
@@ -78,7 +78,7 @@ class Solution(object):
 [Method 2]: Bit Operation 右移n + using logical AND operation
 和解法一类似，但是这次是用n来与1做与运算，每运算完一次则把n右移1位（即抛掉最低位），
 继续与运算，看是否为1。
-[Time]: O(logn)
+[Time]: O(logn)，即n的位数
 Runtime: 28 ms, faster than 5.68% of Python online submissions for Number of 1 Bits.
 Memory Usage: 11.9 MB, less than 10.00% of Python online submissions for Number of 1 Bits.
 '''
