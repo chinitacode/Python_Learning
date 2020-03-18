@@ -57,6 +57,34 @@ class Solution(object):
         end.next = nxt
         return dummy.next
 
+
+# or: without dummy node
+# 需要reverse的部分按照reverse linked list I的方法做，
+# 最后判断reverse部分的前后还有没有节点，
+# 如果有，还需要将前后连接起来，返回head，
+# 否则就直接返回反转后的链表的头结点pre 
+class Solution:
+    def reverseBetween(self, head: ListNode, m: int, n: int) -> ListNode:
+        if not head or m > n: return head
+        i = 1
+        start, cur = None, head
+        while i < m and cur:
+            start = cur
+            cur = cur.next
+            i += 1
+        last, pre = cur, None
+        while i <= n and cur:
+            nxt = cur.next
+            cur.next = pre
+            pre = cur
+            cur = nxt
+            i += 1
+        if start: # if m != 1
+            start.next = pre
+        if cur:
+            last.next = cur
+        return head if start else pre
+
 '''
 [Method 2]: 递归
 '''
