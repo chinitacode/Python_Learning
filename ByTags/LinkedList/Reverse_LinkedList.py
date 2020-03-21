@@ -22,29 +22,16 @@ Time: O(n); Space: O(1)
 Runtime: 24 ms, faster than 59.90% of Python online submissions for Reverse Linked List.
 Memory Usage: 13.7 MB, less than 44.44% of Python online submissions for Reverse Linked List.
 '''
-# Definition for singly-linked list.
-# class ListNode(object):
-#     def __init__(self, x):
-#         self.val = x
-#         self.next = None
-
-class Solution(object):
-    def reverseList(self, head):
-        """
-        :type head: ListNode
-        :rtype: ListNode
-        """
-        #Iterative method
-        if not head: return
-        prev = nxt = None
-        cur = head
-        while cur.next:
-            nxt = cur.next
-            cur.next = prev
-            prev = cur
-            cur = nxt
-        cur.next = prev
-        return cur
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        pre = None
+        node = head
+        while node:
+            nxt = node.next
+            node.next = pre
+            pre = node
+            node = nxt
+        return pre
 
 
 
@@ -53,17 +40,20 @@ class Solution(object):
 让函数返回只是链接方向改变了的链表，其在计算机内存储的reference地址是不变的
 Time: O(n);
 Space: O(n)， 由于使用递归，将会使用隐式栈空间。递归深度可能会达到 n 层。
-Runtime: 44 ms, faster than 55.94% of Python3 online submissions for Reverse Linked List.
-Memory Usage: 19.2 MB, less than 18.18% of Python3 online submissions for Reverse Linked List.
+Runtime: 36 ms, faster than 55.75% of Python3 online submissions for Reverse Linked List.
+Memory Usage: 17.4 MB, less than 22.73% of Python3 online submissions for Reverse Linked List.
 '''
 class Solution:
     def reverseList(self, head: ListNode) -> ListNode:
         if not head or not head.next: return head
-        last, lnk = head, head.next
-        head = self.reverseList(head.next)
-        lnk.next = last
-        last.next = None
-        return head
+        tail = head
+        # 记录最后用来连接头结点后剩余节点全反转后的尾节点，因为反转后返回的是反转后的头结点，即之前的尾结点
+        connection = head.next # 所以我们需要先记录这个节点的reference，记其为连接两部分的枢纽
+        front = self.reverseList(head.next)
+        connection.next = tail
+        # !!!重要!!!最后必须把之前的头节点，现在的尾结点原先的next指针指向None，否则会形成环路！
+        tail.next = None
+        return front
 
 # or optimized as:
 class Solution:
